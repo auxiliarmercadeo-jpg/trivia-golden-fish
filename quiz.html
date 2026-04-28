@@ -115,22 +115,28 @@
     margin-top: 16px; width: 100%; display: none;
   }
   .team-card.visible { display: block; }
-  .team-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-  .team-card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .team-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .team-card-title { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
   .team-count-badge {
-    font-size: 11px; font-weight: 600;
+    font-size: 13px; font-weight: 700;
     background: rgba(200,160,48,0.12); color: var(--gold2);
-    border: 1px solid rgba(200,160,48,0.25); padding: 3px 10px; border-radius: 20px;
+    border: 1px solid rgba(200,160,48,0.25); padding: 4px 12px; border-radius: 20px;
+    white-space: nowrap;
   }
-  .progress-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+  .team-avatars { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .team-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .progress-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
   .progress-fill {
     height: 100%; border-radius: 99px;
     background: linear-gradient(90deg, var(--gold3), var(--gold2));
     transition: width 0.6s cubic-bezier(.4,0,.2,1);
   }
-  .team-list { margin-top: 10px; }
-  .team-list-item { font-size: 12px; color: var(--muted); padding: 3px 0; }
-  .team-list-item.done { color: var(--green); }
+  .team-list { margin-bottom: 10px; }
   .team-msg { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 
   /* Buttons */
@@ -229,6 +235,33 @@
   .punto-result-card .info .name { font-size: 14px; font-weight: 600; color: var(--text); }
   .punto-result-card .info .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
+  /* Ranking nacional */
+  .ranking-btn {
+    width: 100%; padding: 14px; border-radius: var(--radius); border: none; cursor: pointer;
+    font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600;
+    background: var(--navy2); color: var(--text); border: 1px solid var(--border);
+    margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .ranking-btn:hover { border-color: rgba(200,160,48,0.4); background: rgba(200,160,48,0.05); }
+  .ranking-panel { display: none; margin-top: 10px; width: 100%; }
+  .ranking-panel.open { display: block; }
+  .ranking-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: var(--radius-sm);
+    margin-bottom: 6px; background: var(--navy2); border: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .ranking-item.mine { border-color: rgba(200,160,48,0.4); background: rgba(200,160,48,0.06); }
+  .rank-pos { width: 24px; font-weight: 700; font-size: 14px; color: var(--muted); flex-shrink: 0; text-align: center; }
+  .rank-pos.gold   { color: #ffd700; }
+  .rank-pos.silver { color: #c0c0c0; }
+  .rank-pos.bronze { color: #cd7f32; }
+  .rank-info { flex: 1; min-width: 0; }
+  .rank-name { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rank-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .rank-score { font-size: 16px; font-weight: 700; color: var(--gold2); flex-shrink: 0; }
+
   /* YA COMPLETADO */
   .done-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 60px; text-align: center; gap: 12px; }
   .done-emoji { font-size: 64px; }
@@ -266,11 +299,11 @@
   </div>
   <div class="team-card" id="teamCard">
     <div class="team-card-header">
-      <span class="team-card-title">Tu equipo</span>
-      <span class="team-count-badge" id="teamCountBadge">Cargando...</span>
+      <span class="team-card-title" id="teamCardTitle">Tu equipo</span>
+      <span class="team-count-badge" id="teamCountBadge">...</span>
     </div>
-    <div class="progress-track"><div class="progress-fill" id="teamProgressFill" style="width:0%"></div></div>
     <div class="team-list" id="teamList"></div>
+    <div class="progress-track"><div class="progress-fill" id="teamProgressFill" style="width:0%"></div></div>
     <div class="team-msg" id="teamMsg"></div>
   </div>
   <button class="btn btn-primary" id="btnStart" onclick="startQuiz()">¡Comenzar ahora! ↗</button>
@@ -348,7 +381,15 @@
       <div class="sub" id="puntoResultSub">¡Quiz completado!</div>
     </div>
   </div>
-  <button class="btn btn-primary" style="margin-top:20px" onclick="cerrar()">Cerrar</button>
+
+  <button class="ranking-btn" id="rankingToggle" onclick="toggleRanking()">
+    🏆 Ver ranking nacional
+  </button>
+  <div class="ranking-panel" id="rankingPanel">
+    <div id="rankingList" style="font-size:12px;color:var(--muted);padding:10px 0">Cargando...</div>
+  </div>
+
+  <button class="btn btn-primary" style="margin-top:16px" onclick="cerrar()">Cerrar</button>
 </div>
 
 <script>
@@ -421,28 +462,45 @@ async function fetchTeamProgress() {
   } catch(e) {}
 }
 
+const AVATAR_COLORS = ['#3daa6a','#c8a030','#d9534f','#4a90d9','#9b59b6','#e67e22','#1abc9c','#e91e8c'];
+
+function getInitials(name) {
+  return name.trim().split(/\s+/).map(n => n[0]).slice(0,2).join('').toUpperCase();
+}
+
 function showTeamCard(completados, total) {
   const card = document.getElementById('teamCard');
   card.classList.add('visible');
   const count = completados.length;
-  document.getElementById('teamCountBadge').textContent = count + (count===1?' completó':' completaron');
+
+  document.getElementById('teamCardTitle').textContent = 'Equipo — ' + PUNTO;
+  document.getElementById('teamCountBadge').textContent = count + '/' + (total > 0 ? total : '?');
 
   if (total > 0) {
-    document.getElementById('teamProgressFill').style.width = Math.min(count/total*100, 100) + '%';
+    document.getElementById('teamProgressFill').style.width = Math.min(count / total * 100, 100) + '%';
     const faltan = total - count;
     document.getElementById('teamMsg').textContent = faltan > 0
-      ? `Faltan ${faltan} persona${faltan>1?'s':''} por responder`
+      ? `Faltan ${faltan} persona${faltan > 1 ? 's' : ''} por responder`
       : '¡Todos respondieron! 🏆';
   }
 
   const list = document.getElementById('teamList');
   list.innerHTML = '';
-  completados.slice(0, 5).forEach(c => {
-    const el = document.createElement('div');
-    el.className = 'team-list-item done';
-    el.textContent = `✅ ${c.nombre} — ${c.puntaje} pts`;
-    list.appendChild(el);
+  if (completados.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Sé el primero en responder 🎯</div>';
+    return;
+  }
+  const wrap = document.createElement('div');
+  wrap.className = 'team-avatars';
+  completados.slice(0, 8).forEach((c, i) => {
+    const av = document.createElement('div');
+    av.className = 'team-avatar';
+    av.style.background = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    av.textContent = getInitials(c.nombre);
+    av.title = c.nombre + ' — ' + c.puntaje + ' pts';
+    wrap.appendChild(av);
   });
+  list.appendChild(wrap);
 }
 
 function show(id) {
@@ -647,6 +705,52 @@ function animateNum(id, from, to, dur) {
     el.textContent = Math.round(from+(to-from)*(1-Math.pow(1-t,3)));
     if (t<1) requestAnimationFrame(step);
   })(performance.now());
+}
+
+let rankingLoaded = false;
+function toggleRanking() {
+  const panel = document.getElementById('rankingPanel');
+  const btn   = document.getElementById('rankingToggle');
+  const open  = panel.classList.toggle('open');
+  btn.textContent = open ? '▲ Ocultar ranking' : '🏆 Ver ranking nacional';
+  if (open && !rankingLoaded) loadRanking();
+}
+
+async function loadRanking() {
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=getRanking');
+    const data = await r.json();
+    renderRanking(data);
+    rankingLoaded = true;
+  } catch(e) {
+    document.getElementById('rankingList').textContent = 'No se pudo cargar el ranking.';
+  }
+}
+
+function renderRanking(items) {
+  const medals = ['🥇','🥈','🥉'];
+  const posClass = ['gold','silver','bronze'];
+  const list = document.getElementById('rankingList');
+  if (!items || items.length === 0) {
+    list.textContent = 'Sin datos aún esta semana.';
+    return;
+  }
+  list.innerHTML = '';
+  items.forEach((item, i) => {
+    const isMine = item.nombre === PUNTO;
+    const div = document.createElement('div');
+    div.className = 'ranking-item' + (isMine ? ' mine' : '');
+    const pos = i < 3 ? medals[i] : (i + 1);
+    const posC = i < 3 ? posClass[i] : '';
+    div.innerHTML = `
+      <span class="rank-pos ${posC}">${pos}</span>
+      <div class="rank-info">
+        <div class="rank-name">${item.nombre}${isMine ? ' ◀ tú' : ''}</div>
+        <div class="rank-sub">${item.count} respuesta${item.count !== 1 ? 's' : ''}</div>
+      </div>
+      <span class="rank-score">${item.promedio} pts</span>`;
+    list.appendChild(div);
+  });
 }
 
 function cerrar() {
