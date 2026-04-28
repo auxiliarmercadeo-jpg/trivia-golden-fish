@@ -642,20 +642,22 @@ function selectAnswer(idx) {
 
 function nextQuestion() {
   current++;
-  if (current >= questions.length) { saveResult(); showResult(); }
-  else renderQuestion();
+  if (current >= questions.length) {
+    try { saveResult(); } catch(e) {}
+    showResult();
+  } else {
+    renderQuestion();
+  }
 }
 
 function saveResult() {
-  // Guardar en CloudStorage para bloquear segundo intento
   if (tg?.CloudStorage) {
     tg.CloudStorage.setItem(semanaKey, JSON.stringify({ puntaje: score, fecha: new Date().toISOString() }));
   }
-  // Enviar a Apps Script
   if (!SCRIPT_URL) return;
   fetch(SCRIPT_URL, {
-    method: 'POST', mode: 'no-cors',
-    headers: {'Content-Type': 'application/json'},
+    method: 'POST',
+    mode: 'no-cors',
     body: JSON.stringify({
       action: 'saveResult',
       punto: PUNTO,
