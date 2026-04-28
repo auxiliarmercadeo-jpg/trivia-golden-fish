@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Trivia Golden Fish</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -32,9 +33,10 @@
     align-items: center;
     min-height: 100vh;
     overflow-y: auto;
+    /* Anti-screenshot: no text selection */
+    -webkit-user-select: none;
+    user-select: none;
   }
-
-  /* Subtle radial glow at the top */
   body::before {
     content: '';
     position: fixed;
@@ -42,10 +44,8 @@
     transform: translateX(-50%);
     width: 500px; height: 400px;
     background: radial-gradient(ellipse, rgba(200,160,48,0.10) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
-
   .screen {
     display: none; width: 100%; max-width: 420px;
     padding: 0 20px 52px;
@@ -58,83 +58,53 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* MINI HEADER — solo en quiz y resultados */
+  /* MINI HEADER */
   .mini-header {
     width: 100%; max-width: 420px;
     padding: 16px 20px 0;
-    display: none;
-    align-items: center; justify-content: space-between;
+    display: none; align-items: center; justify-content: space-between;
     flex-shrink: 0; position: relative; z-index: 1;
   }
   .mini-header.visible { display: flex; }
-  .mini-brand {
-    font-size: 13px; font-weight: 700;
-    color: var(--gold); letter-spacing: 0.06em;
-  }
+  .mini-brand { font-size: 13px; font-weight: 700; color: var(--gold); letter-spacing: 0.06em; }
   .score-pill {
     font-size: 12px; color: var(--muted);
-    background: var(--navy2);
-    padding: 5px 14px; border-radius: 20px;
-    border: 1px solid var(--border);
+    background: var(--navy2); padding: 5px 14px;
+    border-radius: 20px; border: 1px solid var(--border);
   }
   .score-pill span { color: var(--gold2); font-weight: 600; }
 
-  /* ── INTRO ── */
-  .intro-wrap {
-    display: flex; flex-direction: column;
-    align-items: center; padding-top: 40px;
-  }
+  /* INTRO */
+  .intro-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 40px; }
   .intro-logo img {
     width: 100px; height: 100px; object-fit: contain;
     filter: drop-shadow(0 6px 24px rgba(200,160,48,0.35));
   }
-  .intro-label {
-    margin-top: 18px;
-    font-size: 12px; font-weight: 600;
-    color: var(--muted); letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
+  .intro-label { margin-top: 18px; font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; }
   .intro-gf {
-    font-size: 46px; font-weight: 800;
-    letter-spacing: 0.04em; line-height: 1;
+    font-size: 46px; font-weight: 800; letter-spacing: 0.04em; line-height: 1;
     background: linear-gradient(180deg, var(--gold2) 0%, var(--gold) 55%, var(--gold3) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-align: center;
-    margin-top: 6px;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; text-align: center; margin-top: 6px;
   }
-  .intro-semana {
-    font-size: 13px; color: var(--muted);
-    margin-top: 8px; letter-spacing: 0.02em;
-  }
-  .gold-divider {
-    width: 60px; height: 2px; margin: 18px auto 0;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-  .intro-sub {
-    text-align: center; font-size: 13px;
-    color: var(--muted); margin-top: 14px; line-height: 1.7;
-    padding: 0 8px;
-  }
-  .punto-chip {
-    align-self: center; margin-top: 16px;
-    background: var(--navy2);
-    border: 1px solid rgba(200,160,48,0.25);
+  .intro-semana { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .gold-divider { width: 60px; height: 2px; margin: 18px auto 0; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .intro-sub { text-align: center; font-size: 13px; color: var(--muted); margin-top: 14px; line-height: 1.7; padding: 0 8px; }
+  .user-chip {
+    align-self: center; margin-top: 14px;
+    background: var(--navy2); border: 1px solid rgba(200,160,48,0.25);
     border-radius: 20px; padding: 7px 20px;
     font-size: 13px; color: var(--gold2); font-weight: 500;
   }
   .stats-row { display: flex; gap: 10px; margin-top: 22px; width: 100%; }
   .stat-box {
-    flex: 1; background: var(--navy2);
-    border: 1px solid var(--border); border-radius: var(--radius-sm);
-    padding: 14px 10px; text-align: center;
+    flex: 1; background: var(--navy2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px 10px; text-align: center;
   }
   .stat-box .val {
     font-size: 22px; font-weight: 700;
     background: linear-gradient(180deg, var(--gold2), var(--gold));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .stat-box .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
@@ -150,75 +120,52 @@
   .team-count-badge {
     font-size: 11px; font-weight: 600;
     background: rgba(200,160,48,0.12); color: var(--gold2);
-    border: 1px solid rgba(200,160,48,0.25);
-    padding: 3px 10px; border-radius: 20px;
+    border: 1px solid rgba(200,160,48,0.25); padding: 3px 10px; border-radius: 20px;
   }
-  .progress-track {
-    height: 4px; background: rgba(255,255,255,0.06);
-    border-radius: 99px; overflow: hidden;
-  }
+  .progress-track { height: 4px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
   .progress-fill {
     height: 100%; border-radius: 99px;
     background: linear-gradient(90deg, var(--gold3), var(--gold2));
     transition: width 0.6s cubic-bezier(.4,0,.2,1);
   }
+  .team-list { margin-top: 10px; }
+  .team-list-item { font-size: 12px; color: var(--muted); padding: 3px 0; }
+  .team-list-item.done { color: var(--green); }
   .team-msg { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 
-  /* Button */
+  /* Buttons */
   .btn {
-    width: 100%; padding: 16px;
-    border-radius: var(--radius); border: none; cursor: pointer;
-    font-family: 'Poppins', sans-serif; font-size: 15px;
-    font-weight: 700; letter-spacing: 0.02em;
+    width: 100%; padding: 16px; border-radius: var(--radius); border: none; cursor: pointer;
+    font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.02em;
     transition: transform 0.12s, opacity 0.12s; margin-top: 18px;
   }
   .btn:active { transform: scale(0.97); opacity: 0.9; }
   .btn-primary {
     background: linear-gradient(135deg, var(--gold3), var(--gold), var(--gold2));
-    color: var(--navy);
-    box-shadow: 0 4px 20px rgba(200,160,48,0.3);
+    color: var(--navy); box-shadow: 0 4px 20px rgba(200,160,48,0.3);
   }
-  .btn-secondary {
-    background: var(--navy2); color: var(--text);
-    border: 1px solid var(--border);
-  }
+  .btn-secondary { background: var(--navy2); color: var(--text); border: 1px solid var(--border); }
 
-  /* ── QUIZ ── */
+  /* QUIZ */
   .progress-header { width: 100%; margin-top: 20px; margin-bottom: 4px; }
-  .progress-meta {
-    display: flex; justify-content: space-between;
-    align-items: center; margin-bottom: 8px;
-  }
+  .progress-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .q-num { font-size: 12px; color: var(--muted); font-weight: 500; }
   .timer-ring { width: 36px; height: 36px; position: relative; flex-shrink: 0; }
   .timer-ring svg { transform: rotate(-90deg); }
   .timer-ring .num {
-    position: absolute; inset: 0;
-    display: flex; align-items: center; justify-content: center;
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
     font-size: 12px; font-weight: 700; color: var(--gold2);
   }
-
   .question-card {
-    background: var(--navy2);
-    border: 1px solid rgba(200,160,48,0.2);
-    border-radius: var(--radius); padding: 22px 20px;
-    margin-top: 14px; width: 100%;
+    background: var(--navy2); border: 1px solid rgba(200,160,48,0.2);
+    border-radius: var(--radius); padding: 22px 20px; margin-top: 14px; width: 100%;
   }
-  .q-category {
-    font-size: 10px; font-weight: 700;
-    color: var(--gold); text-transform: uppercase;
-    letter-spacing: 0.15em; margin-bottom: 10px;
-  }
-  .q-text {
-    font-size: 17px; font-weight: 600;
-    line-height: 1.45; color: var(--text);
-  }
+  .q-category { font-size: 10px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 10px; }
+  .q-text { font-size: 17px; font-weight: 600; line-height: 1.45; color: var(--text); }
   .q-emoji { font-size: 38px; text-align: center; margin-top: 14px; }
-
   .options { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; width: 100%; }
   .option {
-    background: var(--navy3);
-    border: 1px solid var(--border);
+    background: var(--navy3); border: 1px solid var(--border);
     border-radius: var(--radius-sm); padding: 13px 16px;
     cursor: pointer; display: flex; align-items: center; gap: 12px;
     transition: border-color 0.15s, background 0.15s, transform 0.1s;
@@ -230,8 +177,7 @@
     width: 28px; height: 28px; border-radius: 8px;
     background: var(--navy2); border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; flex-shrink: 0;
-    color: var(--muted);
+    font-size: 11px; font-weight: 700; flex-shrink: 0; color: var(--muted);
     transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
   .option.correct { border-color: var(--green); background: rgba(61,170,106,0.1); }
@@ -240,118 +186,108 @@
   .option.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
   .option.disabled { pointer-events: none; opacity: 0.45; }
   .option.correct.disabled, .option.wrong.disabled { opacity: 1; }
-
   .feedback-bar {
-    margin-top: 12px; padding: 12px 16px;
-    border-radius: var(--radius-sm); font-size: 13px;
-    line-height: 1.5; display: none;
+    margin-top: 12px; padding: 12px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; line-height: 1.5; display: none;
     animation: fadeUp 0.2s ease; width: 100%;
   }
   .feedback-bar.correct { background: rgba(61,170,106,0.12); border: 1px solid rgba(61,170,106,0.3); color: #8de8b0; display: block; }
-  .feedback-bar.wrong   { background: rgba(224,82,82,0.12);  border: 1px solid rgba(224,82,82,0.3);  color: #f0a0a0; display: block; }
+  .feedback-bar.wrong   { background: rgba(224,82,82,0.12); border: 1px solid rgba(224,82,82,0.3); color: #f0a0a0; display: block; }
   .feedback-bar strong  { display: block; font-weight: 600; margin-bottom: 3px; font-size: 14px; }
   .feedback-bar.correct strong { color: #5dd698; }
   .feedback-bar.wrong strong   { color: var(--wrong); }
 
-  /* ── RESULTADO ── */
-  .result-score-ring {
-    align-self: center; margin-top: 28px;
-    width: 120px; height: 120px; position: relative;
-  }
+  /* RESULTADO */
+  .result-score-ring { align-self: center; margin-top: 28px; width: 120px; height: 120px; position: relative; }
   .result-score-ring svg { transform: rotate(-90deg); }
-  .score-inner {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-  }
+  .score-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .score-inner .big {
     font-size: 32px; font-weight: 800; line-height: 1;
     background: linear-gradient(180deg, var(--gold2), var(--gold));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .score-inner .small { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .result-title {
-    font-size: 22px; font-weight: 800;
-    text-align: center; margin-top: 16px;
+    font-size: 22px; font-weight: 800; text-align: center; margin-top: 16px;
     background: linear-gradient(135deg, var(--gold2), var(--gold));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .result-sub { font-size: 13px; color: var(--muted); text-align: center; margin-top: 6px; line-height: 1.6; }
-  .breakdown {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px; margin-top: 20px; width: 100%;
-  }
-  .breakdown .box {
-    background: var(--navy2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); padding: 14px 10px; text-align: center;
-  }
+  .breakdown { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; width: 100%; }
+  .breakdown .box { background: var(--navy2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; }
   .breakdown .box .n { font-size: 22px; font-weight: 700; }
   .breakdown .box .n.g { color: var(--green); }
   .breakdown .box .n.r { color: var(--wrong); }
   .breakdown .box .n.a { color: var(--gold2); }
   .breakdown .box .l { font-size: 11px; color: var(--muted); margin-top: 3px; }
   .punto-result-card {
-    background: var(--navy2);
-    border: 1px solid rgba(200,160,48,0.2);
-    border-radius: var(--radius); padding: 16px 18px;
-    margin-top: 16px; width: 100%;
+    background: var(--navy2); border: 1px solid rgba(200,160,48,0.2);
+    border-radius: var(--radius); padding: 16px 18px; margin-top: 16px; width: 100%;
     display: flex; align-items: center; gap: 12px;
   }
   .punto-result-card img { width: 38px; height: 38px; object-fit: contain; }
   .punto-result-card .info .name { font-size: 14px; font-weight: 600; color: var(--text); }
   .punto-result-card .info .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-  @keyframes pop {
-    0%   { transform: scale(1); }
-    50%  { transform: scale(1.06); }
-    100% { transform: scale(1); }
-  }
+  /* YA COMPLETADO */
+  .done-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 60px; text-align: center; gap: 12px; }
+  .done-emoji { font-size: 64px; }
+  .done-title { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, var(--gold2), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .done-sub { font-size: 14px; color: var(--muted); line-height: 1.6; padding: 0 10px; }
+  .done-score { font-size: 48px; font-weight: 800; color: var(--gold2); margin-top: 8px; }
+  .done-score-lbl { font-size: 13px; color: var(--muted); margin-top: -6px; }
+
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
   .pop { animation: pop 0.3s ease; }
 </style>
 </head>
 <body>
 
-<!-- Header mini — solo aparece en quiz y resultados -->
 <div class="mini-header" id="miniHeader">
   <span class="mini-brand">GOLDEN FISH</span>
   <div class="score-pill">Pts: <span id="headerPts">0</span></div>
 </div>
 
-<!-- ── INTRO ── -->
+<!-- INTRO -->
 <div class="screen active" id="screenIntro">
   <div class="intro-wrap">
-    <div class="intro-logo">
-      <img src="bomba-rojo.png" alt="Golden Fish">
-    </div>
+    <div class="intro-logo"><img src="bomba-rojo.png" alt="Golden Fish"></div>
     <div class="intro-label">Trivia</div>
     <div class="intro-gf">GOLDEN<br>FISH</div>
     <div class="intro-semana" id="introSemana"></div>
     <div class="gold-divider"></div>
     <p class="intro-sub">5 preguntas sobre la receta y preparación.<br>¡Demuestra que conoces el producto!</p>
-    <div class="punto-chip" id="puntoBadge">📍 Cargando...</div>
+    <div class="user-chip" id="userChip">📍 Cargando...</div>
   </div>
-
   <div class="stats-row">
     <div class="stat-box"><div class="val">5</div><div class="lbl">Preguntas</div></div>
     <div class="stat-box"><div class="val">+50</div><div class="lbl">Pts máximos</div></div>
     <div class="stat-box"><div class="val">20s</div><div class="lbl">Por pregunta</div></div>
   </div>
-
   <div class="team-card" id="teamCard">
     <div class="team-card-header">
-      <span class="team-card-title">Equipo del punto</span>
-      <span class="team-count-badge" id="teamCountBadge">0 respondieron</span>
+      <span class="team-card-title">Tu equipo</span>
+      <span class="team-count-badge" id="teamCountBadge">Cargando...</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="teamProgressFill" style="width:0%"></div></div>
+    <div class="team-list" id="teamList"></div>
     <div class="team-msg" id="teamMsg"></div>
   </div>
-
-  <button class="btn btn-primary" onclick="startQuiz()">¡Comenzar ahora! ↗</button>
+  <button class="btn btn-primary" id="btnStart" onclick="startQuiz()">¡Comenzar ahora! ↗</button>
 </div>
 
-<!-- ── QUIZ ── -->
+<!-- YA COMPLETADO -->
+<div class="screen" id="screenDone">
+  <div class="done-wrap">
+    <div class="done-emoji">🏆</div>
+    <div class="done-title">¡Ya completaste<br>esta trivia!</div>
+    <div class="done-score" id="doneScore">—</div>
+    <div class="done-score-lbl">de 50 pts</div>
+    <p class="done-sub">Ya respondiste la trivia de esta semana.<br>¡Espera la próxima para seguir sumando puntos!</p>
+  </div>
+</div>
+
+<!-- QUIZ -->
 <div class="screen" id="screenQuiz">
   <div class="progress-header">
     <div class="progress-meta">
@@ -360,34 +296,27 @@
         <svg width="36" height="36" viewBox="0 0 36 36">
           <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="3"/>
           <circle id="timerArc" cx="18" cy="18" r="14" fill="none" stroke="#c8a030" stroke-width="3"
-            stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="0"
-            style="transition: stroke 0.3s;"/>
+            stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="0" style="transition:stroke 0.3s;"/>
         </svg>
         <div class="num" id="timerNum">20</div>
       </div>
     </div>
     <div class="progress-track"><div class="progress-fill" id="quizProgress" style="width:0%"></div></div>
   </div>
-
   <div class="question-card">
     <div class="q-category" id="qCategory">Receta</div>
     <div class="q-text" id="qText"></div>
     <div class="q-emoji" id="qEmoji">🐟</div>
   </div>
-
   <div class="options" id="optionsContainer"></div>
-
   <div class="feedback-bar" id="feedbackBar">
     <strong id="feedbackTitle"></strong>
     <span id="feedbackText"></span>
   </div>
-
-  <button class="btn btn-primary" id="nextBtn" style="display:none" onclick="nextQuestion()">
-    Siguiente →
-  </button>
+  <button class="btn btn-primary" id="nextBtn" style="display:none" onclick="nextQuestion()">Siguiente →</button>
 </div>
 
-<!-- ── RESULTADO ── -->
+<!-- RESULTADO -->
 <div class="screen" id="screenResult">
   <div class="result-score-ring">
     <svg width="120" height="120" viewBox="0 0 120 120">
@@ -396,8 +325,7 @@
         stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"/>
       <defs>
         <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#9b6e00"/>
-          <stop offset="100%" stop-color="#e8c060"/>
+          <stop offset="0%" stop-color="#9b6e00"/><stop offset="100%" stop-color="#e8c060"/>
         </linearGradient>
       </defs>
     </svg>
@@ -406,16 +334,13 @@
       <span class="small">de 50 pts</span>
     </div>
   </div>
-
   <h2 class="result-title" id="resultTitle">¡Buen trabajo!</h2>
   <p class="result-sub" id="resultSub"></p>
-
   <div class="breakdown">
     <div class="box"><div class="n g" id="rCorrect">0</div><div class="l">Correctas</div></div>
     <div class="box"><div class="n r" id="rWrong">0</div><div class="l">Incorrectas</div></div>
     <div class="box"><div class="n a" id="rTime">0s</div><div class="l">Tiempo</div></div>
   </div>
-
   <div class="punto-result-card">
     <img src="bomba-rojo.png" alt="logo">
     <div class="info">
@@ -423,65 +348,132 @@
       <div class="sub" id="puntoResultSub">¡Quiz completado!</div>
     </div>
   </div>
-
-  <button class="btn btn-primary" style="margin-top:20px" onclick="goHome()">Volver al inicio</button>
+  <button class="btn btn-primary" style="margin-top:20px" onclick="cerrar()">Cerrar</button>
 </div>
 
 <script>
-// ── Pega aquí la URL de tu Google Apps Script ──
+// ── Configura cuando tengas el Apps Script ──
 const SCRIPT_URL = "";
-// ──────────────────────────────────────────────
+// ───────────────────────────────────────────
 
 const SECS = 20;
 const LETTERS = ['A','B','C','D'];
-const params = new URLSearchParams(location.search);
-const PUNTO = decodeURIComponent(params.get('punto') || 'Tu Punto de Venta');
+const tg = window.Telegram?.WebApp;
 
-let questions = [], current = 0, score = 0, correctCount = 0, wrongCount = 0;
+// Inicializar Telegram Mini App
+if (tg) { tg.ready(); tg.expand(); }
+
+// Obtener datos del usuario y punto
+const tgUser   = tg?.initDataUnsafe?.user;
+const USER_ID   = tgUser?.id || null;
+const USER_NAME = tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : 'Invitado';
+const START_PARAM = tg?.initDataUnsafe?.start_param;
+const params   = new URLSearchParams(location.search);
+const PUNTO    = START_PARAM || decodeURIComponent(params.get('punto') || 'Tu Punto de Venta');
+
+let questions = [], semanaKey = 'semana_1';
+let current = 0, score = 0, correctCount = 0, wrongCount = 0;
 let totalTime = 0, questionStart, timerInterval, answered = false;
+let switched = false; // detectar si salió de la app
+
+// Detectar si el usuario cambió de app durante el quiz
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !answered && current > 0) switched = true;
+});
 
 window.onload = async () => {
-  document.getElementById('puntoBadge').textContent = '📍 ' + PUNTO;
+  document.getElementById('userChip').textContent = '👤 ' + USER_NAME + '  •  📍 ' + PUNTO;
+
   try {
     const r = await fetch('preguntas.json');
     const d = await r.json();
     questions = d.preguntas;
     const match = d.titulo.match(/SEMANA\s+(\d+)/i);
-    if (match) document.getElementById('introSemana').textContent = 'Semana ' + match[1] + ' del concurso';
+    if (match) {
+      document.getElementById('introSemana').textContent = 'Semana ' + match[1] + ' del concurso';
+      semanaKey = 'semana_' + match[1];
+    }
   } catch(e) {}
-  if (SCRIPT_URL) fetchTeamCount();
+
+  // Verificar si ya completó esta semana
+  checkAlreadyDone();
+
+  // Cargar progreso del equipo
+  if (SCRIPT_URL) fetchTeamProgress();
 };
 
-async function fetchTeamCount() {
+function checkAlreadyDone() {
+  if (!tg?.CloudStorage) return;
+  tg.CloudStorage.getItem(semanaKey, (err, value) => {
+    if (!err && value) {
+      const data = JSON.parse(value);
+      document.getElementById('doneScore').textContent = data.puntaje;
+      show('screenDone');
+    }
+  });
+}
+
+async function fetchTeamProgress() {
   try {
-    const r = await fetch(SCRIPT_URL + '?action=getCount&punto=' + encodeURIComponent(PUNTO));
+    const r = await fetch(SCRIPT_URL + '?action=getProgress&punto=' + encodeURIComponent(PUNTO));
     const d = await r.json();
-    showTeamProgress(d.count || 0, d.total || 0);
+    showTeamCard(d.completados || [], d.total || 0);
   } catch(e) {}
 }
 
-function showTeamProgress(count, total) {
-  document.getElementById('teamCard').classList.add('visible');
-  document.getElementById('teamCountBadge').textContent = count + (count === 1 ? ' respondió' : ' respondieron');
+function showTeamCard(completados, total) {
+  const card = document.getElementById('teamCard');
+  card.classList.add('visible');
+  const count = completados.length;
+  document.getElementById('teamCountBadge').textContent = count + (count===1?' completó':' completaron');
+
   if (total > 0) {
-    document.getElementById('teamProgressFill').style.width = Math.min((count/total)*100,100) + '%';
+    document.getElementById('teamProgressFill').style.width = Math.min(count/total*100, 100) + '%';
     const faltan = total - count;
     document.getElementById('teamMsg').textContent = faltan > 0
-      ? `Faltan ${faltan} persona${faltan>1?'s':''} de tu equipo por responder.`
-      : '¡Todo el equipo ya respondió! 🏆';
-  } else {
-    document.getElementById('teamMsg').textContent = count === 0
-      ? '¡Sé el primero de tu punto en responder!'
-      : `${count} persona${count>1?'s':''} de tu punto ya respondieron. ¡Únete!`;
+      ? `Faltan ${faltan} persona${faltan>1?'s':''} por responder`
+      : '¡Todos respondieron! 🏆';
   }
+
+  const list = document.getElementById('teamList');
+  list.innerHTML = '';
+  completados.slice(0, 5).forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'team-list-item done';
+    el.textContent = `✅ ${c.nombre} — ${c.puntaje} pts`;
+    list.appendChild(el);
+  });
 }
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  const isIntro = id === 'screenIntro';
+  const isIntro = id === 'screenIntro' || id === 'screenDone';
   document.getElementById('miniHeader').classList.toggle('visible', !isIntro);
   window.scrollTo(0, 0);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepareQuestions(qs) {
+  // Mezclar preguntas
+  const shuffled = shuffle(qs);
+  // Mezclar opciones de cada pregunta (manteniendo la correcta)
+  return shuffled.map(q => {
+    const indices = shuffle([0,1,2,3]);
+    return {
+      ...q,
+      opciones: indices.map(i => q.opciones[i]),
+      correcta: indices.indexOf(q.correcta)
+    };
+  });
 }
 
 async function startQuiz() {
@@ -491,11 +483,12 @@ async function startQuiz() {
       const d = await r.json();
       questions = d.preguntas;
     } catch(e) {
-      alert('No se pudieron cargar las preguntas. Intenta de nuevo.');
+      alert('No se pudieron cargar las preguntas.');
       return;
     }
   }
-  current = 0; score = 0; correctCount = 0; wrongCount = 0; totalTime = 0;
+  questions = prepareQuestions(questions);
+  current = 0; score = 0; correctCount = 0; wrongCount = 0; totalTime = 0; switched = false;
   document.getElementById('headerPts').textContent = '0';
   show('screenQuiz');
   renderQuestion();
@@ -508,7 +501,7 @@ function renderQuestion() {
   const q = questions[current];
 
   document.getElementById('qNum').textContent = `Pregunta ${current+1} de ${questions.length}`;
-  document.getElementById('quizProgress').style.width = (current / questions.length * 100) + '%';
+  document.getElementById('quizProgress').style.width = (current/questions.length*100) + '%';
   document.getElementById('qCategory').textContent = q.categoria || 'Receta';
   document.getElementById('qText').textContent = q.pregunta;
   document.getElementById('qEmoji').textContent = q.emoji || '🐟';
@@ -535,10 +528,9 @@ function startTimer() {
   arc.style.strokeDashoffset = '0';
   num.textContent = SECS;
   num.style.color = '#e8c060';
-
   timerInterval = setInterval(() => {
     t -= 0.1;
-    arc.style.strokeDashoffset = 88 * (1 - t/SECS);
+    arc.style.strokeDashoffset = 88*(1-t/SECS);
     num.textContent = Math.ceil(t);
     if (t/SECS < 0.3) { arc.style.stroke = '#e05252'; num.style.color = '#e05252'; }
     if (t <= 0) { clearInterval(timerInterval); onTimeout(); }
@@ -565,17 +557,16 @@ function selectAnswer(idx) {
   if (answered) return;
   answered = true;
   clearInterval(timerInterval);
-  totalTime += (Date.now() - questionStart) / 1000;
+  totalTime += (Date.now()-questionStart)/1000;
   const q = questions[current];
   const options = document.querySelectorAll('.option');
   options.forEach(o => o.classList.add('disabled'));
-
   const fb = document.getElementById('feedbackBar');
   if (idx === q.correcta) {
     options[idx].classList.add('correct');
     score += 10; correctCount++;
     document.getElementById('headerPts').textContent = score;
-    document.getElementById('score-pill') && document.getElementById('score-pill').classList.add('pop');
+    document.getElementById('score-pill')?.classList.add('pop');
     fb.className = 'feedback-bar correct';
     document.getElementById('feedbackTitle').textContent = '✓ ¡Correcto! +10 pts';
   } else {
@@ -598,37 +589,54 @@ function nextQuestion() {
 }
 
 function saveResult() {
+  // Guardar en CloudStorage para bloquear segundo intento
+  if (tg?.CloudStorage) {
+    tg.CloudStorage.setItem(semanaKey, JSON.stringify({ puntaje: score, fecha: new Date().toISOString() }));
+  }
+  // Enviar a Apps Script
   if (!SCRIPT_URL) return;
   fetch(SCRIPT_URL, {
     method: 'POST', mode: 'no-cors',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ action:'saveResult', punto:PUNTO, puntaje:score, correctas:correctCount, total:questions.length, fecha:new Date().toISOString() })
+    body: JSON.stringify({
+      action: 'saveResult',
+      punto: PUNTO,
+      user_id: USER_ID,
+      nombre: USER_NAME,
+      puntaje: score,
+      correctas: correctCount,
+      total: questions.length,
+      salio_app: switched,
+      fecha: new Date().toISOString()
+    })
   }).catch(()=>{});
 }
 
 function showResult() {
   show('screenResult');
-  const dashOffset = 314 - (314 * score / 50);
+  const dashOffset = 314-(314*score/50);
   setTimeout(() => {
     document.getElementById('scoreArc').style.transition = 'stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)';
     document.getElementById('scoreArc').style.strokeDashoffset = dashOffset;
     animateNum('scoreBig', 0, score, 1000);
     animateNum('rCorrect', 0, correctCount, 800);
     animateNum('rWrong', 0, wrongCount, 800);
-    document.getElementById('rTime').textContent = Math.round(totalTime) + 's';
+    document.getElementById('rTime').textContent = Math.round(totalTime)+'s';
   }, 100);
-
   const results = [
-    { title:'¡Maestro del Golden Fish!', sub:'Puntaje perfecto — eres un experto en la receta. ¡El equipo está orgulloso!' },
-    { title:'¡Excelente desempeño!',     sub:'Gran conocimiento de la receta. ¡Sigue así!' },
-    { title:'¡Buen trabajo!',            sub:'Vas por buen camino. Repasa los puntos que fallaste.' },
-    { title:'Sigue practicando',         sub:'El conocimiento del producto es clave para vender mejor el Golden Fish.' }
+    {title:'¡Maestro del Golden Fish!', sub:'Puntaje perfecto — eres un experto en la receta. ¡El equipo está orgulloso!'},
+    {title:'¡Excelente desempeño!',     sub:'Gran conocimiento de la receta. ¡Sigue así!'},
+    {title:'¡Buen trabajo!',            sub:'Vas por buen camino. Repasa los puntos que fallaste.'},
+    {title:'Sigue practicando',         sub:'El conocimiento del producto es clave para vender mejor el Golden Fish.'}
   ];
   const idx = score>=50?0:score>=40?1:score>=20?2:3;
   document.getElementById('resultTitle').textContent = results[idx].title;
   document.getElementById('resultSub').textContent = results[idx].sub;
   document.getElementById('puntoResultName').textContent = PUNTO;
   document.getElementById('puntoResultSub').textContent = SCRIPT_URL ? 'Resultado registrado ✓' : '¡Quiz completado!';
+  if (switched) {
+    document.getElementById('puntoResultSub').textContent = '⚠️ Saliste de la app durante el quiz';
+  }
 }
 
 function animateNum(id, from, to, dur) {
@@ -636,14 +644,14 @@ function animateNum(id, from, to, dur) {
   const start = performance.now();
   (function step(now) {
     const t = Math.min((now-start)/dur, 1);
-    el.textContent = Math.round(from + (to-from) * (1-Math.pow(1-t,3)));
-    if (t < 1) requestAnimationFrame(step);
+    el.textContent = Math.round(from+(to-from)*(1-Math.pow(1-t,3)));
+    if (t<1) requestAnimationFrame(step);
   })(performance.now());
 }
 
-function goHome() {
-  clearInterval(timerInterval);
-  show('screenIntro');
+function cerrar() {
+  if (tg) tg.close();
+  else show('screenIntro');
 }
 </script>
 </body>
