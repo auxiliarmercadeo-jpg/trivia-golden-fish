@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trivia Golden Fish</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #1a1a2e;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 560px;
+  padding: 24px 20px;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.screen.active { display: flex; }
+
+/* INTRO */
+.emoji-logo { font-size: 4rem; }
+.titulo { font-size: 1.9rem; font-weight: 800; color: #FFD700; text-align: center; }
+.subtitulo { color: #aaa; text-align: center; font-size: 1rem; }
+.punto-tag {
+  background: #16213e;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  color: #FFD700;
+  font-weight: 600;
+  text-align: center;
+}
+.btn-jugar {
+  background: #FFD700;
+  color: #1a1a2e;
+  border: none;
+  padding: 18px 50px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(255,215,0,0.4);
+}
+.btn-jugar:active { transform: scale(0.97); }
+
+/* QUIZ */
+.quiz-header { width:100%; display:flex; justify-content:space-between; align-items:center; }
+.q-num { color:#aaa; font-size:0.9rem; font-weight:600; }
+.score-pill { background:#FFD700; color:#1a1a2e; padding:5px 14px; border-radius:20px; font-weight:800; font-size:0.9rem; }
+
+.timer-wrap { width:100%; display:flex; align-items:center; gap:10px; }
+.timer-num { font-size:1.4rem; font-weight:800; color:#FFD700; min-width:28px; text-align:center; }
+.timer-bar-bg { flex:1; background:#333; border-radius:10px; height:10px; overflow:hidden; }
+.timer-bar { height:10px; border-radius:10px; background:#FFD700; transition:width 0.1s linear, background 0.3s; }
+
+.pregunta-box {
+  background:#16213e; border-radius:18px; padding:26px 20px;
+  text-align:center; font-size:1.15rem; font-weight:600; line-height:1.5;
+  width:100%; min-height:110px; display:flex; align-items:center; justify-content:center;
+}
+
+.opciones { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; }
+.opcion {
+  padding:22px 10px; border:none; border-radius:14px;
+  font-size:0.95rem; font-weight:700; color:white; cursor:pointer;
+  text-align:center; min-height:85px; display:flex; align-items:center;
+  justify-content:center; line-height:1.3;
+}
+.opcion:active { transform:scale(0.96); }
+.rojo     { background:#E23F44; }
+.azul     { background:#1368CE; }
+.amarillo { background:#D89E00; }
+.verde    { background:#26890C; }
+.opcion.ok  { box-shadow:0 0 0 4px #FFD700; }
+.opcion.mal { opacity:0.3; }
+.opcion.off { cursor:default; pointer-events:none; }
+
+.feedback {
+  width:100%; padding:14px 18px; border-radius:12px;
+  font-size:0.95rem; line-height:1.5; display:none; font-weight:500;
+}
+.feedback.bien { background:#0d3b1e; color:#7fff7f; border:1px solid #2d7a4a; display:block; }
+.feedback.mal  { background:#3b0d0d; color:#ff9999; border:1px solid #7a2d2d; display:block; }
+
+.btn-sig {
+  background:#FFD700; color:#1a1a2e; border:none;
+  padding:14px 36px; font-size:1rem; font-weight:800;
+  border-radius:50px; cursor:pointer; display:none;
+}
+
+/* RESULTS */
+.result-emoji { font-size:5rem; }
+.result-score { font-size:3.5rem; font-weight:900; color:#FFD700; }
+.result-de5 { color:#aaa; font-size:1rem; margin-top:-8px; }
+.result-msg {
+  background:#16213e; padding:22px; border-radius:18px;
+  text-align:center; line-height:1.7; width:100%; font-size:1rem;
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div class="screen active" id="s-intro">
+  <div class="emoji-logo">🐟🔥</div>
+  <div class="titulo" id="txt-titulo">TRIVIA GOLDEN FISH</div>
+  <div class="subtitulo">5 preguntas · Demuestra que conoces el producto</div>
+  <div class="punto-tag" id="txt-punto">Cargando...</div>
+  <button class="btn-jugar" onclick="iniciar()">¡Jugar Ahora!</button>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div class="quiz-header">
+    <span class="q-num" id="txt-qnum">Pregunta 1 de 5</span>
+    <span class="score-pill">Puntaje: <span id="txt-score">0</span></span>
+  </div>
+  <div class="timer-wrap">
+    <div class="timer-num" id="txt-timer">20</div>
+    <div class="timer-bar-bg"><div class="timer-bar" id="bar-timer"></div></div>
+  </div>
+  <div class="pregunta-box" id="txt-pregunta"></div>
+  <div class="opciones" id="grid-ops"></div>
+  <div class="feedback" id="feedback"></div>
+  <button class="btn-sig" id="btn-sig" onclick="siguiente()">Siguiente →</button>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="s-results">
+  <div class="result-emoji" id="res-emoji">🏆</div>
+  <div class="result-score" id="res-score">0</div>
+  <div class="result-de5">de 5 correctas</div>
+  <div class="result-msg" id="res-msg"></div>
+</div>
+
+<script>
+// ── Configura esta URL cuando tengas Google Apps Script ──
+const SCRIPT_URL = "";
+// ────────────────────────────────────────────────────────
+
+const COLORES = ['rojo','azul','amarillo','verde'];
+const SECS    = 20;
+
+const params = new URLSearchParams(location.search);
+const PUNTO  = decodeURIComponent(params.get('punto') || 'Invitado');
+
+let preguntas = [], actual = 0, puntaje = 0, timer = null;
+
+async function iniciar() {
+  try {
+    const r = await fetch('preguntas.json');
+    const d = await r.json();
+    preguntas = d.preguntas;
+    document.getElementById('txt-titulo').textContent = d.titulo;
+  } catch(e) {
+    alert('No se pudo cargar las preguntas. Intenta de nuevo.');
+    return;
+  }
+  document.getElementById('txt-punto').textContent = PUNTO;
+  pantalla('s-quiz');
+  mostrar();
+}
+
+window.onload = () => {
+  document.getElementById('txt-punto').textContent = PUNTO;
+};
+
+function pantalla(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function mostrar() {
+  const q = preguntas[actual];
+  document.getElementById('txt-qnum').textContent     = `Pregunta ${actual+1} de ${preguntas.length}`;
+  document.getElementById('txt-pregunta').textContent = q.pregunta;
+  document.getElementById('txt-score').textContent    = puntaje;
+  document.getElementById('feedback').className       = 'feedback';
+  document.getElementById('btn-sig').style.display    = 'none';
+
+  const grid = document.getElementById('grid-ops');
+  grid.innerHTML = '';
+  q.opciones.forEach((op, i) => {
+    const b = document.createElement('button');
+    b.className   = `opcion ${COLORES[i]}`;
+    b.textContent = op;
+    b.onclick     = () => responder(i);
+    grid.appendChild(b);
+  });
+  arrancarTimer();
+}
+
+function arrancarTimer() {
+  let t = SECS;
+  const bar = document.getElementById('bar-timer');
+  const num = document.getElementById('txt-timer');
+  bar.style.width = '100%';
+  bar.style.background = '#FFD700';
+  clearInterval(timer);
+  timer = setInterval(() => {
+    t -= 0.1;
+    const pct = (t / SECS) * 100;
+    bar.style.width = pct + '%';
+    num.textContent = Math.ceil(t);
+    if (pct < 30) bar.style.background = '#E23F44';
+    if (t <= 0) { clearInterval(timer); sinTiempo(); }
+  }, 100);
+}
+
+function sinTiempo() {
+  bloquear();
+  const fb = document.getElementById('feedback');
+  fb.textContent = '⏱ Se acabó el tiempo!';
+  fb.className   = 'feedback mal';
+  document.getElementById('btn-sig').style.display = 'block';
+}
+
+function responder(idx) {
+  clearInterval(timer);
+  bloquear();
+  const q        = preguntas[actual];
+  const correcta = q.correcta;
+  const ok       = idx === correcta;
+  if (ok) { puntaje++; document.getElementById('txt-score').textContent = puntaje; }
+
+  const btns = document.querySelectorAll('.opcion');
+  btns[correcta].classList.add('ok');
+  btns.forEach((b,i) => { if (i !== correcta) b.classList.add('mal'); });
+
+  const fb = document.getElementById('feedback');
+  fb.textContent = (ok ? '✅ ' : '❌ ') + q.explicacion;
+  fb.className   = 'feedback ' + (ok ? 'bien' : 'mal');
+  document.getElementById('btn-sig').style.display = 'block';
+}
+
+function bloquear() {
+  document.querySelectorAll('.opcion').forEach(b => { b.classList.add('off'); b.onclick = null; });
+}
+
+function siguiente() {
+  actual++;
+  if (actual < preguntas.length) {
+    mostrar();
+  } else {
+    guardarResultado();
+    resultados();
+  }
+}
+
+function guardarResultado() {
+  if (!SCRIPT_URL) return;
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode:   'no-cors',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ punto: PUNTO, puntaje: puntaje, total: preguntas.length, fecha: new Date().toISOString() })
+  }).catch(() => {});
+}
+
+function resultados() {
+  pantalla('s-results');
+  document.getElementById('res-score').textContent = puntaje;
+  let emoji, msg;
+  if (puntaje === 5)      { emoji='🏆'; msg='¡Perfecto! Conocen el Golden Fish al 100%!\nEl equipo está listo para brillar.'; }
+  else if (puntaje >= 3)  { emoji='💪'; msg='¡Buen trabajo! Sigan aprendiendo y mejorando.\nCada detalle del producto cuenta.'; }
+  else                    { emoji='📚'; msg='¡Practiquen más! El conocimiento del producto\nes clave para vender mejor el Golden Fish.'; }
+  document.getElementById('res-emoji').textContent = emoji;
+  document.getElementById('res-msg').textContent   = msg;
+}
+</script>
+</body>
+</html>
