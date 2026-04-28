@@ -19,6 +19,7 @@ BASE_DIR  = Path(__file__).parent
 logger.info(f"BOT_TOKEN present: {bool(BOT_TOKEN)}")
 logger.info(f"BOT_TOKEN preview: {BOT_TOKEN[:10] if BOT_TOKEN else 'NONE'}")
 logger.info(f"ADMIN_ID: {ADMIN_ID}")
+logger.info(f"Variables disponibles: {[k for k in os.environ.keys()]}")
 
 if not BOT_TOKEN:
     raise ValueError("TELEGRAM_BOT_TOKEN no encontrado. Verifica las variables en Railway.")
