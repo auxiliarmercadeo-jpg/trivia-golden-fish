@@ -1,0 +1,454 @@
+[
+  {
+    "nombre": "ARKADIA",
+    "chat_id": -1003753041381
+  },
+  {
+    "nombre": "AVENTURA",
+    "chat_id": -1003729408156
+  },
+  {
+    "nombre": "EXITO BELLO",
+    "chat_id": -1003838017876
+  },
+  {
+    "nombre": "PLAZA FABRICATO",
+    "chat_id": -1003749288723
+  },
+  {
+    "nombre": "FLORIDA MEDELLIN",
+    "chat_id": -1003688220181
+  },
+  {
+    "nombre": "PUERTA DEL NORTE",
+    "chat_id": -1003713488776
+  },
+  {
+    "nombre": "UNICENMED",
+    "chat_id": -1003824083317
+  },
+  {
+    "nombre": "LACENTRAL",
+    "chat_id": -1003959405308
+  },
+  {
+    "nombre": "MOLINOS",
+    "chat_id": -1003977567819
+  },
+  {
+    "nombre": "PREMIUN MED",
+    "chat_id": -1003760688883
+  },
+  {
+    "nombre": "SAN DIEGO",
+    "chat_id": -1003906947439
+  },
+  {
+    "nombre": "SAN NICOLAS",
+    "chat_id": -1003960923388
+  },
+  {
+    "nombre": "TESORO",
+    "chat_id": -1003770109373
+  },
+  {
+    "nombre": "CITY PLAZA",
+    "chat_id": -1003743410636
+  },
+  {
+    "nombre": "LAS VEGAS SABANETA",
+    "chat_id": -1003855828823
+  },
+  {
+    "nombre": "MAYORCA",
+    "chat_id": -1003909813275
+  },
+  {
+    "nombre": "MAYORCA ETAPA 1",
+    "chat_id": -1003610709985
+  },
+  {
+    "nombre": "OVIEDO",
+    "chat_id": -1003720912281
+  },
+  {
+    "nombre": "SANTA FE MED",
+    "chat_id": -1003904947277
+  },
+  {
+    "nombre": "VIVA ENVIGADO",
+    "chat_id": -1003922752233
+  },
+  {
+    "nombre": "BUENAVISTA-B",
+    "chat_id": -1003979914588
+  },
+  {
+    "nombre": "LA CASTELLANA",
+    "chat_id": -1003986538356
+  },
+  {
+    "nombre": "MALL PLAZA CARTAGENA",
+    "chat_id": -1003983153532
+  },
+  {
+    "nombre": "PORTAL DEL PRADO",
+    "chat_id": -1003903666258
+  },
+  {
+    "nombre": "UNICENTRO CUCUTA",
+    "chat_id": -1003908757767
+  },
+  {
+    "nombre": "UNICO BARRANQUILLA",
+    "chat_id": -1003964883044
+  },
+  {
+    "nombre": "VENTURA CUCUTA",
+    "chat_id": -1003777856232
+  },
+  {
+    "nombre": "VIVA BARRANQUILLA",
+    "chat_id": -1003862557057
+  },
+  {
+    "nombre": "AVA FLORIDA MEDELLIN",
+    "chat_id": -1003938229724
+  },
+  {
+    "nombre": "AVA MAYORCA SABANETA",
+    "chat_id": -1003576807794
+  },
+  {
+    "nombre": "AVA SANTAFE MEDELLIN",
+    "chat_id": -1003009258709
+  },
+  {
+    "nombre": "ARBOLEDA",
+    "chat_id": -1003771041057
+  },
+  {
+    "nombre": "EL PROGRESO",
+    "chat_id": -1003922232313
+  },
+  {
+    "nombre": "LA 14 TULUA",
+    "chat_id": -1003820746766
+  },
+  {
+    "nombre": "LA HERRADURA",
+    "chat_id": -1003950465782
+  },
+  {
+    "nombre": "NUESTRO CARTAGO",
+    "chat_id": -1003601800344
+  },
+  {
+    "nombre": "UNICENTRO PEREIRA",
+    "chat_id": -1003863415542
+  },
+  {
+    "nombre": "VICTORIA PLAZA",
+    "chat_id": -1003767230017
+  },
+  {
+    "nombre": "FUNDADORES N",
+    "chat_id": -1003829831925
+  },
+  {
+    "nombre": "LA ESTACION IBAGUE",
+    "chat_id": -1003880968411
+  },
+  {
+    "nombre": "MALL PLAZA MANIZALES",
+    "chat_id": -1003711622968
+  },
+  {
+    "nombre": "PLAZA FLORA",
+    "chat_id": -1003936905232
+  },
+  {
+    "nombre": "SANCANCIO MANIZALES",
+    "chat_id": -1003943583769
+  },
+  {
+    "nombre": "UNICENTRO ARMENIA",
+    "chat_id": -1003917178287
+  },
+  {
+    "nombre": "AVA FONTANAR",
+    "chat_id": -1003981655732
+  },
+  {
+    "nombre": "AVA MALL NQS",
+    "chat_id": -1003741974432
+  },
+  {
+    "nombre": "AVA SANTAFE BOGOTA",
+    "chat_id": -1003975012331
+  },
+  {
+    "nombre": "ANDINO",
+    "chat_id": -1003738556099
+  },
+  {
+    "nombre": "CAFAN FLORESTA",
+    "chat_id": -1003960705246
+  },
+  {
+    "nombre": "CONECTA BOGOTA",
+    "chat_id": -1003953985187
+  },
+  {
+    "nombre": "CORFERIAS BOGOTA",
+    "chat_id": -1003864156803
+  },
+  {
+    "nombre": "GRAN ESTACION1",
+    "chat_id": -1003774520591
+  },
+  {
+    "nombre": "NUESTRO BOGOTA",
+    "chat_id": -1003918956059
+  },
+  {
+    "nombre": "SALITRE",
+    "chat_id": -1003948257201
+  },
+  {
+    "nombre": "TITAN",
+    "chat_id": -1003841828242
+  },
+  {
+    "nombre": "UNIBOGOTA",
+    "chat_id": -1003956677454
+  },
+  {
+    "nombre": "AEROPUERTO EL DORADO",
+    "chat_id": -1003961143043
+  },
+  {
+    "nombre": "EDEN",
+    "chat_id": -1003990306520
+  },
+  {
+    "nombre": "EXITO CHAPINERO",
+    "chat_id": -1003845834678
+  },
+  {
+    "nombre": "HAYUELOS",
+    "chat_id": -1003861323275
+  },
+  {
+    "nombre": "MALL PLAZA NQS",
+    "chat_id": -1003930918227
+  },
+  {
+    "nombre": "MULTIPLAZA",
+    "chat_id": -1003886930708
+  },
+  {
+    "nombre": "TINTAL",
+    "chat_id": -1003947853193
+  },
+  {
+    "nombre": "VIVA VILLAVICENCIO",
+    "chat_id": -1003727674617
+  },
+  {
+    "nombre": "CEDRITOS PLAZA",
+    "chat_id": -1003547931827
+  },
+  {
+    "nombre": "CENTROCHIA",
+    "chat_id": -1003794852960
+  },
+  {
+    "nombre": "DIVERPLAZA",
+    "chat_id": -1003979535102
+  },
+  {
+    "nombre": "FONTANAR",
+    "chat_id": -1003481354892
+  },
+  {
+    "nombre": "PLAZA IMPERIAL",
+    "chat_id": -1003985548308
+  },
+  {
+    "nombre": "PORTAL 80",
+    "chat_id": -1003923953776
+  },
+  {
+    "nombre": "SAN RAFAEL",
+    "chat_id": -1003888569391
+  },
+  {
+    "nombre": "SANTAFE BOGOTA",
+    "chat_id": -1003910688835
+  },
+  {
+    "nombre": "VIVA TUNJA",
+    "chat_id": -1003962331416
+  },
+  {
+    "nombre": "CENTRO MAYOR",
+    "chat_id": -1003991296075
+  },
+  {
+    "nombre": "ENSUEÑO",
+    "chat_id": -1003669914621
+  },
+  {
+    "nombre": "GRAN PLAZA BOSA",
+    "chat_id": -1003921837830
+  },
+  {
+    "nombre": "MERCURIO",
+    "chat_id": -1003758969957
+  },
+  {
+    "nombre": "PASEO VILLA DEL RIO",
+    "chat_id": -1003925004387
+  },
+  {
+    "nombre": "PLAZA CENTRAL",
+    "chat_id": -1003910208682
+  },
+  {
+    "nombre": "PLAZA LAS AMERICAS",
+    "chat_id": -1002907722488
+  },
+  {
+    "nombre": "CENTENARIO",
+    "chat_id": -1003750084787
+  },
+  {
+    "nombre": "GRAN COMERCIO CALI",
+    "chat_id": -1003662596589
+  },
+  {
+    "nombre": "LA ESTACION CALI",
+    "chat_id": -1003359332083
+  },
+  {
+    "nombre": "LLANOGRANDE",
+    "chat_id": -1003740426418
+  },
+  {
+    "nombre": "PALMETTO",
+    "chat_id": -1003950116218
+  },
+  {
+    "nombre": "SRWOK 9NA",
+    "chat_id": -1003962569563
+  },
+  {
+    "nombre": "UNIPALMIRA",
+    "chat_id": -1003583151834
+  },
+  {
+    "nombre": "AV SEXTA",
+    "chat_id": -1003831980100
+  },
+  {
+    "nombre": "CHIPICHAPEWOK",
+    "chat_id": -1003571812513
+  },
+  {
+    "nombre": "EXITO VIVA B/TURA",
+    "chat_id": -1003731036962
+  },
+  {
+    "nombre": "MENGA PLAZA",
+    "chat_id": -1003767124278
+  },
+  {
+    "nombre": "SALOMIAWOK",
+    "chat_id": -1003732796980
+  },
+  {
+    "nombre": "UNICO CALI",
+    "chat_id": -1003791286415
+  },
+  {
+    "nombre": "UNICO YUMBO",
+    "chat_id": -1003898455262
+  },
+  {
+    "nombre": "AVA FUNDADORES MANIZALES",
+    "chat_id": -1003989620355
+  },
+  {
+    "nombre": "AVA CHIPICHAPE",
+    "chat_id": -1003986890514
+  },
+  {
+    "nombre": "AVA COSMOCENTRO",
+    "chat_id": -1003992292505
+  },
+  {
+    "nombre": "AVA JARDIN PLAZA",
+    "chat_id": -1003926107852
+  },
+  {
+    "nombre": "AVA MALL PLAZA CALI",
+    "chat_id": -1003500198219
+  },
+  {
+    "nombre": "AVA UNICENTRO CALI",
+    "chat_id": -1003978315012
+  },
+  {
+    "nombre": "AVA UNICO CALI",
+    "chat_id": -1003833555399
+  },
+  {
+    "nombre": "MARTIN AV SEXTA",
+    "chat_id": -1003906502791
+  },
+  {
+    "nombre": "MARTIN BIRRIERIA CHIPICHAPE",
+    "chat_id": -1003838248041
+  },
+  {
+    "nombre": "MARTIN BIRRIERIA LA 9NA",
+    "chat_id": -1003870436152
+  },
+  {
+    "nombre": "MARTIN BIRRIERIA SALOMIA",
+    "chat_id": -1003865275987
+  },
+  {
+    "nombre": "MARTIN BOCHALEMA",
+    "chat_id": -1003747730483
+  },
+  {
+    "nombre": "BOCHALEMA",
+    "chat_id": -1003977002847
+  },
+  {
+    "nombre": "CAMPANARIO",
+    "chat_id": -1003949076483
+  },
+  {
+    "nombre": "COSMOCENTRO",
+    "chat_id": -1003975315275
+  },
+  {
+    "nombre": "JARDIN PLAZA",
+    "chat_id": -1003910106837
+  },
+  {
+    "nombre": "LA 14 ALFAGUARA",
+    "chat_id": -1003579850834
+  },
+  {
+    "nombre": "MALL PLAZA CALI",
+    "chat_id": -1003566839215
+  },
+  {
+    "nombre": "UNICENTRO",
+    "chat_id": -1003958840135
+  }
+]
