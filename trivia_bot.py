@@ -15,6 +15,14 @@ BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 ADMIN_ID  = int(os.getenv("ADMIN_ID", "0"))
 BASE_DIR  = Path(__file__).parent
 
+# Startup diagnostics
+logger.info(f"BOT_TOKEN present: {bool(BOT_TOKEN)}")
+logger.info(f"BOT_TOKEN preview: {BOT_TOKEN[:10] if BOT_TOKEN else 'NONE'}")
+logger.info(f"ADMIN_ID: {ADMIN_ID}")
+
+if not BOT_TOKEN:
+    raise ValueError("TELEGRAM_BOT_TOKEN no encontrado. Verifica las variables en Railway.")
+
 # poll_id → {chat_id, q_index, correct_option_id}
 poll_map = {}
 # chat_id → {nombre, correctas}
