@@ -2,30 +2,40 @@
   "titulo": "TRIVIA GOLDEN FISH — SEMANA 1",
   "preguntas": [
     {
+      "categoria": "Salsa",
+      "emoji": "🥣",
       "pregunta": "¿Cuánta salsa Golden Fish se añade al wok caliente?",
       "opciones": ["200g (media taza)", "300g (1 cucharón)", "400g (2 cucharones)", "500g (1 taza completa)"],
       "correcta": 1,
       "explicacion": "300g equivale a 1 cucharón. La cantidad exacta garantiza el sabor perfecto del Golden Fish."
     },
     {
+      "categoria": "Fritura",
+      "emoji": "🔥",
       "pregunta": "¿Cuánto tiempo va el Golden Fish en fritura y a qué temperatura?",
       "opciones": ["3 min a 300°F", "4 min a 350°F", "5 min a 375°F", "6 min a 400°F"],
       "correcta": 1,
       "explicacion": "4 minutos a 350°F (175°C) garantiza la textura perfecta: crujiente por fuera, jugoso por dentro."
     },
     {
+      "categoria": "Ingredientes",
+      "emoji": "🥦",
       "pregunta": "¿Qué verduras pertenecen a la receta Golden Fish?",
       "opciones": ["Zanahoria, pimentón y cebolla cabezona", "Zanahoria, brócoli y cebolla puerro", "Brócoli, champiñones y cebolla cabezona", "Zanahoria, maíz y pimentón"],
       "correcta": 1,
       "explicacion": "Zanahoria, brócoli y cebolla puerro son las verduras que dan el toque especial al Golden Fish."
     },
     {
+      "categoria": "Calidad",
+      "emoji": "⏰",
       "pregunta": "¿Cuál es el tiempo máximo que puede permanecer el Golden Fish en barra para garantizar su frescura y crocancia?",
       "opciones": ["20 minutos", "30 minutos", "40 minutos", "60 minutos"],
       "correcta": 2,
       "explicacion": "Máximo 40 minutos en barra. Después se pierde la frescura y crocancia del producto."
     },
     {
+      "categoria": "Preparación",
+      "emoji": "🍳",
       "pregunta": "¿En qué momento se agregan las verduras al wok por segunda vez?",
       "opciones": ["Antes de la salsa", "Junto con el pescado", "Después del pescado", "Al mismo tiempo que el aceite"],
       "correcta": 2,
