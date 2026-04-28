@@ -7,18 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f7f7f7;
-    --white: #ffffff;
-    --card: #ffffff;
-    --card2: #f0f0f0;
-    --border: rgba(0,0,0,0.08);
-    --text: #111111;
-    --muted: #888888;
-    --red: #d4001a;
-    --red2: #9b0013;
-    --black: #1a1a1a;
-    --green: #1e8c4a;
-    --wrong: #e05252;
+    --navy:   #0b1628;
+    --navy2:  #112040;
+    --navy3:  #1a2e52;
+    --border: rgba(255,255,255,0.07);
+    --text:   #f0ede8;
+    --muted:  #7a90b8;
+    --gold:   #c8a030;
+    --gold2:  #e8c060;
+    --gold3:  #9b6e00;
+    --green:  #3daa6a;
+    --wrong:  #e05252;
     --radius: 16px;
     --radius-sm: 10px;
   }
@@ -26,7 +25,7 @@
   html, body { height: 100%; }
   body {
     font-family: 'Poppins', sans-serif;
-    background: var(--bg);
+    background: var(--navy);
     color: var(--text);
     display: flex;
     flex-direction: column;
@@ -35,132 +34,157 @@
     overflow-y: auto;
   }
 
-  .screen { display: none; width: 100%; max-width: 420px; padding: 0 20px 48px; animation: fadeUp 0.3s ease; }
+  /* Subtle radial glow at the top */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -120px; left: 50%;
+    transform: translateX(-50%);
+    width: 500px; height: 400px;
+    background: radial-gradient(ellipse, rgba(200,160,48,0.10) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen {
+    display: none; width: 100%; max-width: 420px;
+    padding: 0 20px 52px;
+    animation: fadeUp 0.3s ease;
+    position: relative; z-index: 1;
+  }
   .screen.active { display: flex; flex-direction: column; }
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* HEADER */
-  .header {
+  /* MINI HEADER — solo en quiz y resultados */
+  .mini-header {
     width: 100%; max-width: 420px;
-    padding: 18px 20px 0;
-    display: flex; align-items: center; justify-content: space-between;
-    flex-shrink: 0;
+    padding: 16px 20px 0;
+    display: none;
+    align-items: center; justify-content: space-between;
+    flex-shrink: 0; position: relative; z-index: 1;
   }
-  .header-logo { display: flex; align-items: center; gap: 10px; }
-  .header-logo img { width: 34px; height: 34px; object-fit: contain; }
-  .header-logo-text {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 800; font-size: 15px;
-    color: var(--red); letter-spacing: 0.03em;
+  .mini-header.visible { display: flex; }
+  .mini-brand {
+    font-size: 13px; font-weight: 700;
+    color: var(--gold); letter-spacing: 0.06em;
   }
-  .header-pts {
-    font-size: 13px; color: var(--muted);
-    background: var(--white);
+  .score-pill {
+    font-size: 12px; color: var(--muted);
+    background: var(--navy2);
     padding: 5px 14px; border-radius: 20px;
     border: 1px solid var(--border);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
-  .header-pts span { color: var(--red); font-weight: 600; }
+  .score-pill span { color: var(--gold2); font-weight: 600; }
 
-  /* INTRO */
-  .intro-logo-wrap {
-    align-self: center;
-    margin-top: 30px;
+  /* ── INTRO ── */
+  .intro-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; padding-top: 40px;
   }
-  .intro-logo-wrap img {
-    width: 90px; height: 90px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 16px rgba(212,0,26,0.25));
+  .intro-logo img {
+    width: 100px; height: 100px; object-fit: contain;
+    filter: drop-shadow(0 6px 24px rgba(200,160,48,0.35));
   }
-  .intro-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 28px; font-weight: 800;
-    text-align: center; margin-top: 16px; line-height: 1.15;
-    color: var(--black);
+  .intro-label {
+    margin-top: 18px;
+    font-size: 12px; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.2em;
+    text-transform: uppercase;
   }
-  .intro-title em { color: var(--red); font-style: normal; }
+  .intro-gf {
+    font-size: 46px; font-weight: 800;
+    letter-spacing: 0.04em; line-height: 1;
+    background: linear-gradient(180deg, var(--gold2) 0%, var(--gold) 55%, var(--gold3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-top: 6px;
+  }
   .intro-semana {
-    text-align: center; font-size: 13px;
-    color: var(--muted); margin-top: 5px;
+    font-size: 13px; color: var(--muted);
+    margin-top: 8px; letter-spacing: 0.02em;
+  }
+  .gold-divider {
+    width: 60px; height: 2px; margin: 18px auto 0;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
   }
   .intro-sub {
-    text-align: center; font-size: 14px;
-    color: var(--muted); margin-top: 10px; line-height: 1.6;
+    text-align: center; font-size: 13px;
+    color: var(--muted); margin-top: 14px; line-height: 1.7;
+    padding: 0 8px;
   }
   .punto-chip {
-    align-self: center; margin-top: 14px;
-    background: var(--black);
-    border-radius: 20px; padding: 7px 18px;
-    font-size: 13px; color: #fff; font-weight: 500;
+    align-self: center; margin-top: 16px;
+    background: var(--navy2);
+    border: 1px solid rgba(200,160,48,0.25);
+    border-radius: 20px; padding: 7px 20px;
+    font-size: 13px; color: var(--gold2); font-weight: 500;
   }
   .stats-row { display: flex; gap: 10px; margin-top: 22px; width: 100%; }
   .stat-box {
-    flex: 1; background: var(--white);
+    flex: 1; background: var(--navy2);
     border: 1px solid var(--border); border-radius: var(--radius-sm);
     padding: 14px 10px; text-align: center;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
-  .stat-box .val { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; color: var(--red); }
+  .stat-box .val {
+    font-size: 22px; font-weight: 700;
+    background: linear-gradient(180deg, var(--gold2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
   .stat-box .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-  /* Team progress card */
+  /* Team card */
   .team-card {
-    background: var(--white); border: 1px solid var(--border);
+    background: var(--navy2); border: 1px solid rgba(200,160,48,0.18);
     border-radius: var(--radius); padding: 16px 18px;
-    margin-top: 16px; width: 100%;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    display: none;
+    margin-top: 16px; width: 100%; display: none;
   }
   .team-card.visible { display: block; }
-  .team-card-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 10px;
-  }
-  .team-card-title { font-size: 13px; font-weight: 600; color: var(--black); }
+  .team-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .team-card-title { font-size: 13px; font-weight: 600; color: var(--text); }
   .team-count-badge {
-    font-size: 12px; font-weight: 600;
-    background: #d4001a14; color: var(--red);
-    border: 1px solid #d4001a22;
+    font-size: 11px; font-weight: 600;
+    background: rgba(200,160,48,0.12); color: var(--gold2);
+    border: 1px solid rgba(200,160,48,0.25);
     padding: 3px 10px; border-radius: 20px;
   }
   .progress-track {
-    height: 5px; background: #f0f0f0;
+    height: 4px; background: rgba(255,255,255,0.06);
     border-radius: 99px; overflow: hidden;
   }
   .progress-fill {
     height: 100%; border-radius: 99px;
-    background: linear-gradient(90deg, var(--red2), var(--red));
+    background: linear-gradient(90deg, var(--gold3), var(--gold2));
     transition: width 0.6s cubic-bezier(.4,0,.2,1);
   }
-  .team-msg {
-    font-size: 12px; color: var(--muted);
-    margin-top: 8px; line-height: 1.5;
-  }
+  .team-msg { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 
-  /* BUTTONS */
+  /* Button */
   .btn {
     width: 100%; padding: 16px;
     border-radius: var(--radius); border: none; cursor: pointer;
-    font-family: 'Poppins', sans-serif; font-size: 16px;
-    font-weight: 700; letter-spacing: 0.01em;
-    transition: transform 0.12s, opacity 0.12s; margin-top: 16px;
+    font-family: 'Poppins', sans-serif; font-size: 15px;
+    font-weight: 700; letter-spacing: 0.02em;
+    transition: transform 0.12s, opacity 0.12s; margin-top: 18px;
   }
   .btn:active { transform: scale(0.97); opacity: 0.9; }
   .btn-primary {
-    background: linear-gradient(135deg, var(--red2), var(--red));
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(212,0,26,0.28);
+    background: linear-gradient(135deg, var(--gold3), var(--gold), var(--gold2));
+    color: var(--navy);
+    box-shadow: 0 4px 20px rgba(200,160,48,0.3);
   }
   .btn-secondary {
-    background: var(--white); color: var(--black);
+    background: var(--navy2); color: var(--text);
     border: 1px solid var(--border);
   }
 
-  /* QUIZ */
-  .progress-header { width: 100%; margin-top: 22px; margin-bottom: 4px; }
+  /* ── QUIZ ── */
+  .progress-header { width: 100%; margin-top: 20px; margin-bottom: 4px; }
   .progress-meta {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 8px;
@@ -171,51 +195,50 @@
   .timer-ring .num {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Poppins', sans-serif; font-size: 12px;
-    font-weight: 700; color: var(--red);
+    font-size: 12px; font-weight: 700; color: var(--gold2);
   }
 
   .question-card {
-    background: var(--black); border-radius: var(--radius);
-    padding: 24px 20px; margin-top: 14px; width: 100%;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    background: var(--navy2);
+    border: 1px solid rgba(200,160,48,0.2);
+    border-radius: var(--radius); padding: 22px 20px;
+    margin-top: 14px; width: 100%;
   }
   .q-category {
-    font-size: 11px; font-weight: 600;
-    color: var(--red); text-transform: uppercase;
-    letter-spacing: 0.1em; margin-bottom: 10px;
+    font-size: 10px; font-weight: 700;
+    color: var(--gold); text-transform: uppercase;
+    letter-spacing: 0.15em; margin-bottom: 10px;
   }
   .q-text {
-    font-family: 'Poppins', sans-serif; font-size: 18px;
-    font-weight: 600; line-height: 1.4; color: #ffffff;
+    font-size: 17px; font-weight: 600;
+    line-height: 1.45; color: var(--text);
   }
-  .q-emoji { font-size: 40px; text-align: center; margin-top: 14px; }
+  .q-emoji { font-size: 38px; text-align: center; margin-top: 14px; }
 
-  .options { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; width: 100%; }
+  .options { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; width: 100%; }
   .option {
-    background: var(--white); border: 1.5px solid var(--border);
-    border-radius: var(--radius-sm); padding: 14px 16px;
+    background: var(--navy3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 13px 16px;
     cursor: pointer; display: flex; align-items: center; gap: 12px;
     transition: border-color 0.15s, background 0.15s, transform 0.1s;
-    font-size: 14px; color: var(--text); text-align: left;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    font-size: 13px; color: var(--text); text-align: left;
   }
-  .option:hover { border-color: var(--red); background: #fff5f5; }
+  .option:hover { border-color: rgba(200,160,48,0.4); background: rgba(200,160,48,0.05); }
   .option:active { transform: scale(0.985); }
   .option .opt-letter {
     width: 28px; height: 28px; border-radius: 8px;
-    background: var(--bg); border: 1.5px solid var(--border);
+    background: var(--navy2); border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-family: 'Poppins', sans-serif;
-    font-weight: 700; flex-shrink: 0;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
     color: var(--muted);
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
   }
-  .option.correct { border-color: var(--green); background: #e8f7ee; }
+  .option.correct { border-color: var(--green); background: rgba(61,170,106,0.1); }
   .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
-  .option.wrong { border-color: var(--wrong); background: #fdeaea; }
+  .option.wrong { border-color: var(--wrong); background: rgba(224,82,82,0.1); }
   .option.wrong .opt-letter { background: var(--wrong); border-color: var(--wrong); color: #fff; }
-  .option.disabled { pointer-events: none; opacity: 0.5; }
+  .option.disabled { pointer-events: none; opacity: 0.45; }
   .option.correct.disabled, .option.wrong.disabled { opacity: 1; }
 
   .feedback-bar {
@@ -224,13 +247,13 @@
     line-height: 1.5; display: none;
     animation: fadeUp 0.2s ease; width: 100%;
   }
-  .feedback-bar.correct { background: #e8f7ee; border: 1px solid #a8d8b8; color: #145a30; display: block; }
-  .feedback-bar.wrong   { background: #fdeaea; border: 1px solid #f0b0b0; color: #7b1010; display: block; }
-  .feedback-bar strong  { display: block; font-weight: 600; margin-bottom: 2px; font-size: 14px; }
-  .feedback-bar.correct strong { color: var(--green); }
+  .feedback-bar.correct { background: rgba(61,170,106,0.12); border: 1px solid rgba(61,170,106,0.3); color: #8de8b0; display: block; }
+  .feedback-bar.wrong   { background: rgba(224,82,82,0.12);  border: 1px solid rgba(224,82,82,0.3);  color: #f0a0a0; display: block; }
+  .feedback-bar strong  { display: block; font-weight: 600; margin-bottom: 3px; font-size: 14px; }
+  .feedback-bar.correct strong { color: #5dd698; }
   .feedback-bar.wrong strong   { color: var(--wrong); }
 
-  /* RESULT */
+  /* ── RESULTADO ── */
   .result-score-ring {
     align-self: center; margin-top: 28px;
     width: 120px; height: 120px; position: relative;
@@ -242,15 +265,18 @@
     align-items: center; justify-content: center;
   }
   .score-inner .big {
-    font-family: 'Poppins', sans-serif;
-    font-size: 30px; font-weight: 800;
-    color: var(--black); line-height: 1;
+    font-size: 32px; font-weight: 800; line-height: 1;
+    background: linear-gradient(180deg, var(--gold2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   .score-inner .small { font-size: 11px; color: var(--muted); margin-top: 2px; }
   .result-title {
-    font-family: 'Poppins', sans-serif;
-    font-size: 24px; font-weight: 800;
-    text-align: center; margin-top: 16px; color: var(--black);
+    font-size: 22px; font-weight: 800;
+    text-align: center; margin-top: 16px;
+    background: linear-gradient(135deg, var(--gold2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
   .result-sub { font-size: 13px; color: var(--muted); text-align: center; margin-top: 6px; line-height: 1.6; }
   .breakdown {
@@ -258,24 +284,24 @@
     gap: 10px; margin-top: 20px; width: 100%;
   }
   .breakdown .box {
-    background: var(--white); border: 1px solid var(--border);
+    background: var(--navy2); border: 1px solid var(--border);
     border-radius: var(--radius-sm); padding: 14px 10px; text-align: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
-  .breakdown .box .n { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 700; }
+  .breakdown .box .n { font-size: 22px; font-weight: 700; }
   .breakdown .box .n.g { color: var(--green); }
   .breakdown .box .n.r { color: var(--wrong); }
-  .breakdown .box .n.a { color: var(--red); }
+  .breakdown .box .n.a { color: var(--gold2); }
   .breakdown .box .l { font-size: 11px; color: var(--muted); margin-top: 3px; }
-
   .punto-result-card {
-    background: var(--black); border-radius: var(--radius);
-    padding: 16px 18px; margin-top: 16px; width: 100%;
+    background: var(--navy2);
+    border: 1px solid rgba(200,160,48,0.2);
+    border-radius: var(--radius); padding: 16px 18px;
+    margin-top: 16px; width: 100%;
     display: flex; align-items: center; gap: 12px;
   }
-  .punto-result-card img { width: 36px; height: 36px; object-fit: contain; }
-  .punto-result-card .info .name { font-size: 14px; font-weight: 600; color: #fff; }
-  .punto-result-card .info .sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+  .punto-result-card img { width: 38px; height: 38px; object-fit: contain; }
+  .punto-result-card .info .name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .punto-result-card .info .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
   @keyframes pop {
     0%   { transform: scale(1); }
@@ -287,23 +313,25 @@
 </head>
 <body>
 
-<div class="header">
-  <div class="header-logo">
-    <img src="bomba-rojo.png" alt="Golden Fish">
-    <span class="header-logo-text">GOLDEN FISH</span>
-  </div>
-  <div class="header-pts">Pts: <span id="headerPts">0</span></div>
+<!-- Header mini — solo aparece en quiz y resultados -->
+<div class="mini-header" id="miniHeader">
+  <span class="mini-brand">GOLDEN FISH</span>
+  <div class="score-pill">Pts: <span id="headerPts">0</span></div>
 </div>
 
-<!-- INTRO -->
+<!-- ── INTRO ── -->
 <div class="screen active" id="screenIntro">
-  <div class="intro-logo-wrap">
-    <img src="bomba-rojo.png" alt="Golden Fish">
+  <div class="intro-wrap">
+    <div class="intro-logo">
+      <img src="bomba-rojo.png" alt="Golden Fish">
+    </div>
+    <div class="intro-label">Trivia</div>
+    <div class="intro-gf">GOLDEN<br>FISH</div>
+    <div class="intro-semana" id="introSemana"></div>
+    <div class="gold-divider"></div>
+    <p class="intro-sub">5 preguntas sobre la receta y preparación.<br>¡Demuestra que conoces el producto!</p>
+    <div class="punto-chip" id="puntoBadge">📍 Cargando...</div>
   </div>
-  <h1 class="intro-title">TRIVIA<br><em>Golden Fish</em></h1>
-  <div class="intro-semana" id="introSemana"></div>
-  <p class="intro-sub">5 preguntas sobre la receta y preparación.<br>¡Demuestra que conoces el producto!</p>
-  <div class="punto-chip" id="puntoBadge">📍 Cargando...</div>
 
   <div class="stats-row">
     <div class="stat-box"><div class="val">5</div><div class="lbl">Preguntas</div></div>
@@ -317,21 +345,21 @@
       <span class="team-count-badge" id="teamCountBadge">0 respondieron</span>
     </div>
     <div class="progress-track"><div class="progress-fill" id="teamProgressFill" style="width:0%"></div></div>
-    <div class="team-msg" id="teamMsg">Cargando...</div>
+    <div class="team-msg" id="teamMsg"></div>
   </div>
 
   <button class="btn btn-primary" onclick="startQuiz()">¡Comenzar ahora! ↗</button>
 </div>
 
-<!-- QUIZ -->
+<!-- ── QUIZ ── -->
 <div class="screen" id="screenQuiz">
   <div class="progress-header">
     <div class="progress-meta">
       <span class="q-num" id="qNum">Pregunta 1 de 5</span>
       <div class="timer-ring">
         <svg width="36" height="36" viewBox="0 0 36 36">
-          <circle cx="18" cy="18" r="14" fill="none" stroke="#e8e8e8" stroke-width="3"/>
-          <circle id="timerArc" cx="18" cy="18" r="14" fill="none" stroke="#d4001a" stroke-width="3"
+          <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="3"/>
+          <circle id="timerArc" cx="18" cy="18" r="14" fill="none" stroke="#c8a030" stroke-width="3"
             stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="0"
             style="transition: stroke 0.3s;"/>
         </svg>
@@ -359,17 +387,17 @@
   </button>
 </div>
 
-<!-- RESULTADO -->
+<!-- ── RESULTADO ── -->
 <div class="screen" id="screenResult">
   <div class="result-score-ring">
     <svg width="120" height="120" viewBox="0 0 120 120">
-      <circle cx="60" cy="60" r="50" fill="none" stroke="#eeeeee" stroke-width="8"/>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
       <circle id="scoreArc" cx="60" cy="60" r="50" fill="none" stroke="url(#scoreGrad)" stroke-width="8"
         stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"/>
       <defs>
         <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#9b0013"/>
-          <stop offset="100%" stop-color="#d4001a"/>
+          <stop offset="0%" stop-color="#9b6e00"/>
+          <stop offset="100%" stop-color="#e8c060"/>
         </linearGradient>
       </defs>
     </svg>
@@ -402,7 +430,7 @@
 <script>
 // ── Pega aquí la URL de tu Google Apps Script ──
 const SCRIPT_URL = "";
-// ─────────────────────────────────────────────
+// ──────────────────────────────────────────────
 
 const SECS = 20;
 const LETTERS = ['A','B','C','D'];
@@ -414,8 +442,6 @@ let totalTime = 0, questionStart, timerInterval, answered = false;
 
 window.onload = async () => {
   document.getElementById('puntoBadge').textContent = '📍 ' + PUNTO;
-
-  // Cargar preguntas
   try {
     const r = await fetch('preguntas.json');
     const d = await r.json();
@@ -423,42 +449,39 @@ window.onload = async () => {
     const match = d.titulo.match(/SEMANA\s+(\d+)/i);
     if (match) document.getElementById('introSemana').textContent = 'Semana ' + match[1] + ' del concurso';
   } catch(e) {}
-
-  // Cargar conteo del equipo
   if (SCRIPT_URL) fetchTeamCount();
 };
 
 async function fetchTeamCount() {
   try {
-    const url = SCRIPT_URL + '?action=getCount&punto=' + encodeURIComponent(PUNTO);
-    const r = await fetch(url);
+    const r = await fetch(SCRIPT_URL + '?action=getCount&punto=' + encodeURIComponent(PUNTO));
     const d = await r.json();
-    const count = d.count || 0;
-    const total = d.total || 0; // si defines total esperado por punto
-    showTeamProgress(count, total);
+    showTeamProgress(d.count || 0, d.total || 0);
   } catch(e) {}
 }
 
 function showTeamProgress(count, total) {
-  const card = document.getElementById('teamCard');
-  card.classList.add('visible');
+  document.getElementById('teamCard').classList.add('visible');
   document.getElementById('teamCountBadge').textContent = count + (count === 1 ? ' respondió' : ' respondieron');
-
   if (total > 0) {
-    const pct = Math.min((count / total) * 100, 100);
-    document.getElementById('teamProgressFill').style.width = pct + '%';
+    document.getElementById('teamProgressFill').style.width = Math.min((count/total)*100,100) + '%';
     const faltan = total - count;
-    document.getElementById('teamMsg').textContent =
-      faltan > 0
-        ? `Faltan ${faltan} persona${faltan > 1 ? 's' : ''} de tu equipo por responder. ¡Sé de los primeros!`
-        : '¡Todo el equipo ya respondió! 🏆';
+    document.getElementById('teamMsg').textContent = faltan > 0
+      ? `Faltan ${faltan} persona${faltan>1?'s':''} de tu equipo por responder.`
+      : '¡Todo el equipo ya respondió! 🏆';
   } else {
-    document.getElementById('teamProgressFill').style.width = '0%';
-    document.getElementById('teamMsg').textContent =
-      count === 0
-        ? '¡Sé el primero de tu punto en responder!'
-        : `${count} persona${count > 1 ? 's' : ''} de tu punto ya respondieron. ¡Únete!`;
+    document.getElementById('teamMsg').textContent = count === 0
+      ? '¡Sé el primero de tu punto en responder!'
+      : `${count} persona${count>1?'s':''} de tu punto ya respondieron. ¡Únete!`;
   }
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const isIntro = id === 'screenIntro';
+  document.getElementById('miniHeader').classList.toggle('visible', !isIntro);
+  window.scrollTo(0, 0);
 }
 
 async function startQuiz() {
@@ -478,22 +501,14 @@ async function startQuiz() {
   renderQuestion();
 }
 
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
 function renderQuestion() {
   answered = false;
   clearInterval(timerInterval);
   questionStart = Date.now();
-
   const q = questions[current];
-  const pct = (current / questions.length) * 100;
 
   document.getElementById('qNum').textContent = `Pregunta ${current+1} de ${questions.length}`;
-  document.getElementById('quizProgress').style.width = pct + '%';
+  document.getElementById('quizProgress').style.width = (current / questions.length * 100) + '%';
   document.getElementById('qCategory').textContent = q.categoria || 'Receta';
   document.getElementById('qText').textContent = q.pregunta;
   document.getElementById('qEmoji').textContent = q.emoji || '🐟';
@@ -509,7 +524,6 @@ function renderQuestion() {
     el.onclick = () => selectAnswer(i);
     container.appendChild(el);
   });
-
   startTimer();
 }
 
@@ -517,17 +531,16 @@ function startTimer() {
   let t = SECS;
   const arc = document.getElementById('timerArc');
   const num = document.getElementById('timerNum');
-  arc.style.stroke = '#d4001a';
+  arc.style.stroke = '#c8a030';
   arc.style.strokeDashoffset = '0';
   num.textContent = SECS;
-  num.style.color = 'var(--red)';
+  num.style.color = '#e8c060';
 
   timerInterval = setInterval(() => {
     t -= 0.1;
-    const pct = t / SECS;
-    arc.style.strokeDashoffset = 88 * (1 - pct);
+    arc.style.strokeDashoffset = 88 * (1 - t/SECS);
     num.textContent = Math.ceil(t);
-    if (pct < 0.3) { arc.style.stroke = '#e05252'; num.style.color = '#e05252'; }
+    if (t/SECS < 0.3) { arc.style.stroke = '#e05252'; num.style.color = '#e05252'; }
     if (t <= 0) { clearInterval(timerInterval); onTimeout(); }
   }, 100);
 }
@@ -538,15 +551,14 @@ function onTimeout() {
   const options = document.querySelectorAll('.option');
   options.forEach(o => o.classList.add('disabled'));
   options[questions[current].correcta].classList.add('correct');
-  totalTime += SECS;
-  wrongCount++;
+  totalTime += SECS; wrongCount++;
   const fb = document.getElementById('feedbackBar');
   fb.className = 'feedback-bar wrong';
   document.getElementById('feedbackTitle').textContent = '⏱ Tiempo agotado';
   document.getElementById('feedbackText').textContent = questions[current].explicacion;
   const btn = document.getElementById('nextBtn');
   btn.style.display = 'block';
-  btn.textContent = current < questions.length - 1 ? 'Siguiente →' : 'Ver resultados →';
+  btn.textContent = current < questions.length-1 ? 'Siguiente →' : 'Ver resultados →';
 }
 
 function selectAnswer(idx) {
@@ -554,7 +566,6 @@ function selectAnswer(idx) {
   answered = true;
   clearInterval(timerInterval);
   totalTime += (Date.now() - questionStart) / 1000;
-
   const q = questions[current];
   const options = document.querySelectorAll('.option');
   options.forEach(o => o.classList.add('disabled'));
@@ -562,11 +573,9 @@ function selectAnswer(idx) {
   const fb = document.getElementById('feedbackBar');
   if (idx === q.correcta) {
     options[idx].classList.add('correct');
-    score += 10;
-    correctCount++;
+    score += 10; correctCount++;
     document.getElementById('headerPts').textContent = score;
-    document.getElementById('headerPts').parentElement.classList.add('pop');
-    setTimeout(() => document.getElementById('headerPts').parentElement.classList.remove('pop'), 300);
+    document.getElementById('score-pill') && document.getElementById('score-pill').classList.add('pop');
     fb.className = 'feedback-bar correct';
     document.getElementById('feedbackTitle').textContent = '✓ ¡Correcto! +10 pts';
   } else {
@@ -579,17 +588,13 @@ function selectAnswer(idx) {
   document.getElementById('feedbackText').textContent = q.explicacion;
   const btn = document.getElementById('nextBtn');
   btn.style.display = 'block';
-  btn.textContent = current < questions.length - 1 ? 'Siguiente →' : 'Ver resultados →';
+  btn.textContent = current < questions.length-1 ? 'Siguiente →' : 'Ver resultados →';
 }
 
 function nextQuestion() {
   current++;
-  if (current >= questions.length) {
-    saveResult();
-    showResult();
-  } else {
-    renderQuestion();
-  }
+  if (current >= questions.length) { saveResult(); showResult(); }
+  else renderQuestion();
 }
 
 function saveResult() {
@@ -597,13 +602,8 @@ function saveResult() {
   fetch(SCRIPT_URL, {
     method: 'POST', mode: 'no-cors',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      action: 'saveResult',
-      punto: PUNTO, puntaje: score,
-      correctas: correctCount, total: questions.length,
-      fecha: new Date().toISOString()
-    })
-  }).catch(() => {});
+    body: JSON.stringify({ action:'saveResult', punto:PUNTO, puntaje:score, correctas:correctCount, total:questions.length, fecha:new Date().toISOString() })
+  }).catch(()=>{});
 }
 
 function showResult() {
@@ -619,12 +619,12 @@ function showResult() {
   }, 100);
 
   const results = [
-    { title: '¡Maestro del Golden Fish!', sub: 'Puntaje perfecto — eres un experto en la receta. ¡El equipo está orgulloso!' },
-    { title: '¡Excelente desempeño!',     sub: 'Gran conocimiento de la receta. ¡Sigue así!' },
-    { title: '¡Buen trabajo!',            sub: 'Vas por buen camino. Repasa los puntos que fallaste.' },
-    { title: 'Sigue practicando',         sub: 'El conocimiento del producto es clave para vender mejor el Golden Fish.' }
+    { title:'¡Maestro del Golden Fish!', sub:'Puntaje perfecto — eres un experto en la receta. ¡El equipo está orgulloso!' },
+    { title:'¡Excelente desempeño!',     sub:'Gran conocimiento de la receta. ¡Sigue así!' },
+    { title:'¡Buen trabajo!',            sub:'Vas por buen camino. Repasa los puntos que fallaste.' },
+    { title:'Sigue practicando',         sub:'El conocimiento del producto es clave para vender mejor el Golden Fish.' }
   ];
-  const idx = score >= 50 ? 0 : score >= 40 ? 1 : score >= 20 ? 2 : 3;
+  const idx = score>=50?0:score>=40?1:score>=20?2:3;
   document.getElementById('resultTitle').textContent = results[idx].title;
   document.getElementById('resultSub').textContent = results[idx].sub;
   document.getElementById('puntoResultName').textContent = PUNTO;
@@ -634,12 +634,11 @@ function showResult() {
 function animateNum(id, from, to, dur) {
   const el = document.getElementById(id);
   const start = performance.now();
-  function step(now) {
-    const t = Math.min((now - start) / dur, 1);
-    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3)));
+  (function step(now) {
+    const t = Math.min((now-start)/dur, 1);
+    el.textContent = Math.round(from + (to-from) * (1-Math.pow(1-t,3)));
     if (t < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
+  })(performance.now());
 }
 
 function goHome() {
