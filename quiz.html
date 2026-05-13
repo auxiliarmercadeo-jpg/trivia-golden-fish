@@ -8,17 +8,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:   #0b1628;
-    --navy2:  #112040;
-    --navy3:  #1a2e52;
-    --border: rgba(255,255,255,0.07);
-    --text:   #f0ede8;
-    --muted:  #7a90b8;
-    --gold:   #c8a030;
-    --gold2:  #e8c060;
-    --gold3:  #9b6e00;
-    --green:  #3daa6a;
-    --wrong:  #e05252;
+    --navy:   #f5ede0;
+    --navy2:  #ece3d0;
+    --navy3:  #e2d7c2;
+    --border: rgba(139,109,65,0.18);
+    --text:   #2a1a08;
+    --muted:  #7a6548;
+    --gold:   #b07d10;
+    --gold2:  #c8920e;
+    --gold3:  #8a6010;
+    --green:  #2a8a50;
+    --wrong:  #c43030;
     --radius: 16px;
     --radius-sm: 10px;
   }
@@ -43,7 +43,7 @@
     top: -120px; left: 50%;
     transform: translateX(-50%);
     width: 500px; height: 400px;
-    background: radial-gradient(ellipse, rgba(200,160,48,0.10) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(180,130,20,0.06) 0%, transparent 70%);
     pointer-events: none; z-index: 0;
   }
   .screen {
@@ -130,7 +130,7 @@
     font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
-  .progress-track { height: 5px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+  .progress-track { height: 5px; background: rgba(0,0,0,0.1); border-radius: 99px; overflow: hidden; }
   .progress-fill {
     height: 100%; border-radius: 99px;
     background: linear-gradient(90deg, var(--gold3), var(--gold2));
@@ -197,10 +197,10 @@
     font-size: 13px; line-height: 1.5; display: none;
     animation: fadeUp 0.2s ease; width: 100%;
   }
-  .feedback-bar.correct { background: rgba(61,170,106,0.12); border: 1px solid rgba(61,170,106,0.3); color: #8de8b0; display: block; }
-  .feedback-bar.wrong   { background: rgba(224,82,82,0.12); border: 1px solid rgba(224,82,82,0.3); color: #f0a0a0; display: block; }
+  .feedback-bar.correct { background: rgba(42,138,80,0.10); border: 1px solid rgba(42,138,80,0.3); color: #1a5c35; display: block; }
+  .feedback-bar.wrong   { background: rgba(196,48,48,0.10); border: 1px solid rgba(196,48,48,0.3); color: #8b1c1c; display: block; }
   .feedback-bar strong  { display: block; font-weight: 600; margin-bottom: 3px; font-size: 14px; }
-  .feedback-bar.correct strong { color: #5dd698; }
+  .feedback-bar.correct strong { color: #0d4427; }
   .feedback-bar.wrong strong   { color: var(--wrong); }
 
   /* RESULTADO */
@@ -287,7 +287,7 @@
   .q-dots { display: flex; gap: 7px; align-items: center; }
   .q-dot {
     width: 9px; height: 9px; border-radius: 50%;
-    background: rgba(255,255,255,0.12);
+    background: rgba(0,0,0,0.12);
     transition: background 0.3s, transform 0.3s;
   }
   .q-dot.done    { background: var(--gold3); }
@@ -391,7 +391,7 @@
       <div class="streak-badge" id="streakBadge">🔥 <span id="streakNum">2</span></div>
       <div class="timer-ring">
         <svg width="36" height="36" viewBox="0 0 36 36">
-          <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="3"/>
+          <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="3"/>
           <circle id="timerArc" cx="18" cy="18" r="14" fill="none" stroke="#c8a030" stroke-width="3"
             stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="0" style="transition:stroke 0.3s;"/>
         </svg>
@@ -417,7 +417,7 @@
 <div class="screen" id="screenResult">
   <div class="result-score-ring">
     <svg width="120" height="120" viewBox="0 0 120 120">
-      <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8"/>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="8"/>
       <circle id="scoreArc" cx="60" cy="60" r="50" fill="none" stroke="url(#scoreGrad)" stroke-width="8"
         stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314"/>
       <defs>
