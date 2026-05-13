@@ -482,7 +482,7 @@ window.onload = async () => {
   document.getElementById('userChip').textContent = '👤 ' + USER_NAME + '  •  📍 ' + PUNTO;
 
   try {
-    const r = await fetch('preguntas.json');
+    const r = await fetch('preguntas.json?v=' + Date.now());
     const d = await r.json();
     questions = d.preguntas;
     const match = d.titulo.match(/SEMANA\s+(\d+)/i);
@@ -593,7 +593,7 @@ function prepareQuestions(qs) {
 async function startQuiz() {
   if (!questions.length) {
     try {
-      const r = await fetch('preguntas.json');
+      const r = await fetch('preguntas.json?v=' + Date.now());
       const d = await r.json();
       questions = d.preguntas;
     } catch(e) {
