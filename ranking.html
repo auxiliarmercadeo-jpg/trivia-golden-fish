@@ -115,26 +115,26 @@ const param = tg?.initDataUnsafe?.start_param;
 const PUNTO = param ? param.replace(/_/g, ' ') : new URLSearchParams(location.search).get('punto') || '';
 
 const DATOS = [
-  { nombre: 'NUESTRO BOGOTA',       semanas: [44, 48, 50],  participantes: 12 },
-  { nombre: 'AEROPUERTO EL DORADO', semanas: [46, 42, 48],  participantes: 9  },
-  { nombre: 'MAYORCA ETAPA 1',      semanas: [40, 50, 46],  participantes: 11 },
-  { nombre: 'SANTA FE MED',         semanas: [42, 44, 44],  participantes: 14 },
-  { nombre: 'CONECTA BOGOTA',       semanas: [38, 46, 42],  participantes: 8  },
-  { nombre: 'UNICO BARRANQUILLA',   semanas: [36, 40, 44],  participantes: 10 },
-  { nombre: 'CENTRO MAYOR',         semanas: [34, 38, 42],  participantes: 13 },
-  { nombre: 'TITAN',                semanas: [40, 36, 40],  participantes: 7  },
-  { nombre: 'OVIEDO',               semanas: [38, 34, 40],  participantes: 9  },
-  { nombre: 'ANDINO',               semanas: [32, 42, 38],  participantes: 11 },
-  { nombre: 'GRAN ESTACION1',       semanas: [36, 38, 36],  participantes: 8  },
-  { nombre: 'TESORO',               semanas: [30, 36, 38],  participantes: 12 },
-  { nombre: 'SAN DIEGO',            semanas: [34, 32, 36],  participantes: 6  },
-  { nombre: 'FONTANAR',             semanas: [28, 34, 36],  participantes: 9  },
-  { nombre: 'HAYUELOS',             semanas: [32, 30, 34],  participantes: 7  },
-  { nombre: 'PLAZA LAS AMERICAS',   semanas: [26, 32, 34],  participantes: 10 },
-  { nombre: 'VIVA ENVIGADO',        semanas: [30, 28, 32],  participantes: 8  },
-  { nombre: 'SANTAFE BOGOTA',       semanas: [28, 30, 30],  participantes: 11 },
-  { nombre: 'SALITRE',              semanas: [24, 28, 30],  participantes: 6  },
-  { nombre: 'COSMOCENTRO',          semanas: [22, 26, 28],  participantes: 9  },
+  { nombre: 'NUESTRO BOGOTA',       semanas: [19.2, 20.1, 21.8], tendencia: 'up'   },
+  { nombre: 'AEROPUERTO EL DORADO', semanas: [18.5, 19.8, 20.6], tendencia: 'up'   },
+  { nombre: 'MAYORCA ETAPA 1',      semanas: [20.1, 19.5, 20.5], tendencia: 'up'   },
+  { nombre: 'SANTA FE MED',         semanas: [18.0, 19.2, 19.6], tendencia: 'up'   },
+  { nombre: 'CONECTA BOGOTA',       semanas: [17.8, 18.5, 18.9], tendencia: 'up'   },
+  { nombre: 'UNICO BARRANQUILLA',   semanas: [17.2, 18.0, 18.5], tendencia: 'up'   },
+  { nombre: 'CENTRO MAYOR',         semanas: [16.5, 17.4, 18.1], tendencia: 'up'   },
+  { nombre: 'TITAN',                semanas: [17.9, 17.1, 17.8], tendencia: 'up'   },
+  { nombre: 'OVIEDO',               semanas: [16.8, 16.5, 17.3], tendencia: 'down' },
+  { nombre: 'ANDINO',               semanas: [15.2, 16.9, 17.0], tendencia: 'up'   },
+  { nombre: 'GRAN ESTACION1',       semanas: [16.1, 16.4, 16.8], tendencia: 'up'   },
+  { nombre: 'TESORO',               semanas: [14.8, 15.7, 16.5], tendencia: 'up'   },
+  { nombre: 'SAN DIEGO',            semanas: [15.5, 15.2, 16.1], tendencia: 'up'   },
+  { nombre: 'FONTANAR',             semanas: [13.9, 14.8, 15.7], tendencia: 'up'   },
+  { nombre: 'HAYUELOS',             semanas: [14.2, 14.5, 15.3], tendencia: 'up'   },
+  { nombre: 'PLAZA LAS AMERICAS',   semanas: [13.1, 14.2, 15.0], tendencia: 'up'   },
+  { nombre: 'VIVA ENVIGADO',        semanas: [14.5, 13.8, 14.6], tendencia: 'up'   },
+  { nombre: 'SANTAFE BOGOTA',       semanas: [13.8, 14.1, 14.2], tendencia: 'up'   },
+  { nombre: 'SALITRE',              semanas: [12.4, 13.2, 13.8], tendencia: 'up'   },
+  { nombre: 'COSMOCENTRO',          semanas: [11.8, 12.5, 13.1], tendencia: 'up'   },
 ];
 
 let tabActual = 2;
@@ -146,7 +146,7 @@ function setTab(i) {
 }
 
 function getPts(d, tab) {
-  if (tab === 3) return d.semanas.reduce((a, b) => a + b, 0);
+  if (tab === 3) return parseFloat((d.semanas.reduce((a, b) => a + b, 0) / d.semanas.length).toFixed(1));
   return d.semanas[tab] ?? 0;
 }
 
@@ -158,6 +158,9 @@ function renderList() {
   sorted.forEach((d, i) => {
     const pos   = i + 1;
     const pts   = getPts(d, tabActual);
+    const prev  = tabActual > 0 && tabActual < 3 ? d.semanas[tabActual - 1] : null;
+    const flecha = prev !== null ? (pts > prev ? '▲' : pts < prev ? '▼' : '—') : '';
+    const flechaColor = flecha === '▲' ? '#2a8a50' : flecha === '▼' ? '#c43030' : '#aaa';
     const esMio = PUNTO && d.nombre.toUpperCase() === PUNTO.toUpperCase();
 
     const rankClass = pos === 1 ? 'r1' : pos === 2 ? 'r2' : pos === 3 ? 'r3' : '';
@@ -169,12 +172,14 @@ function renderList() {
         <div class="rank ${rankClass}">${medal}</div>
         <div class="info">
           <div class="name">${d.nombre}</div>
-          <div class="meta">${d.participantes} participantes</div>
+          <div class="meta" style="display:flex;align-items:center;gap:6px;">
+            ${flecha ? `<span style="color:${flechaColor};font-weight:700;font-size:12px;">${flecha} vs sem anterior</span>` : '<span>Promedio acumulado</span>'}
+          </div>
           ${esMio ? '<span class="mine-badge">Tu punto</span>' : ''}
         </div>
         <div class="pts">
-          <div class="pts-num">${pts}</div>
-          <div class="pts-label">pts</div>
+          <div class="pts-num">${pts}%</div>
+          <div class="pts-label">% venta</div>
         </div>
       </div>`;
   });
