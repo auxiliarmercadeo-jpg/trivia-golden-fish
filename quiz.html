@@ -272,6 +272,59 @@
 
   @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
   .pop { animation: pop 0.3s ease; }
+
+  /* Progress dots */
+  .q-dots { display: flex; gap: 7px; align-items: center; }
+  .q-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    transition: background 0.3s, transform 0.3s;
+  }
+  .q-dot.done    { background: var(--gold3); }
+  .q-dot.current { background: var(--gold2); transform: scale(1.35); box-shadow: 0 0 6px rgba(232,192,96,0.5); }
+
+  /* Streak badge */
+  .streak-badge {
+    display: none; align-items: center; gap: 3px;
+    font-size: 12px; font-weight: 700; color: #ff9500;
+    background: rgba(255,149,0,0.12); border: 1px solid rgba(255,149,0,0.3);
+    padding: 3px 9px; border-radius: 20px;
+  }
+  .streak-badge.visible { display: flex; }
+
+  /* Option entrance stagger */
+  @keyframes optIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Correct pulse */
+  @keyframes pulse-correct {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.035); box-shadow: 0 0 0 4px rgba(61,170,106,0.35); }
+    100% { transform: scale(1); }
+  }
+  .option.correct { animation: pulse-correct 0.45s ease !important; }
+
+  /* Wrong shake */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-7px); }
+    40%     { transform: translateX(7px); }
+    60%     { transform: translateX(-4px); }
+    80%     { transform: translateX(4px); }
+  }
+  .option.wrong { animation: shake 0.38s ease !important; }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed; width: 9px; height: 9px; top: -12px;
+    border-radius: 3px; pointer-events: none; z-index: 9999;
+    animation: confetti-fall linear forwards;
+  }
+  @keyframes confetti-fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
 </style>
 </head>
 <body>
@@ -324,7 +377,8 @@
 <div class="screen" id="screenQuiz">
   <div class="progress-header">
     <div class="progress-meta">
-      <span class="q-num" id="qNum">Pregunta 1 de 5</span>
+      <div class="q-dots" id="qDots"></div>
+      <div class="streak-badge" id="streakBadge">🔥 <span id="streakNum">2</span></div>
       <div class="timer-ring">
         <svg width="36" height="36" viewBox="0 0 36 36">
           <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="3"/>
@@ -397,7 +451,7 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzisYO6eJcmOEZfhRNiUnuGvt7kksPSOWAh-QPPzMDoR_sSSu-T31NCPE1RnJdZSj7/exec";
 // ───────────────────────────────────────────
 
-const SECS = 20;
+const SECS = 10;
 const LETTERS = ['A','B','C','D'];
 const tg = window.Telegram?.WebApp;
 
@@ -416,6 +470,7 @@ let questions = [], semanaKey = 'semana_1';
 let current = 0, score = 0, correctCount = 0, wrongCount = 0;
 let totalTime = 0, questionStart, timerInterval, answered = false;
 let switched = false; // detectar si salió de la app
+let streak = 0;
 
 // Detectar si el usuario cambió de app durante el quiz
 document.addEventListener('visibilitychange', () => {
@@ -546,7 +601,7 @@ async function startQuiz() {
     }
   }
   questions = prepareQuestions(questions);
-  current = 0; score = 0; correctCount = 0; wrongCount = 0; totalTime = 0; switched = false;
+  current = 0; score = 0; correctCount = 0; wrongCount = 0; totalTime = 0; switched = false; streak = 0;
   document.getElementById('headerPts').textContent = '0';
   show('screenQuiz');
   renderQuestion();
@@ -558,7 +613,15 @@ function renderQuestion() {
   questionStart = Date.now();
   const q = questions[current];
 
-  document.getElementById('qNum').textContent = `Pregunta ${current+1} de ${questions.length}`;
+  // Progress dots
+  const dotsEl = document.getElementById('qDots');
+  dotsEl.innerHTML = '';
+  for (let i = 0; i < questions.length; i++) {
+    const d = document.createElement('div');
+    d.className = 'q-dot' + (i < current ? ' done' : i === current ? ' current' : '');
+    dotsEl.appendChild(d);
+  }
+
   document.getElementById('quizProgress').style.width = (current/questions.length*100) + '%';
   document.getElementById('qCategory').textContent = q.categoria || 'Receta';
   document.getElementById('qText').textContent = q.pregunta;
@@ -571,6 +634,7 @@ function renderQuestion() {
   q.opciones.forEach((opt, i) => {
     const el = document.createElement('button');
     el.className = 'option';
+    el.style.animation = `optIn 0.25s ease ${i * 0.07}s both`;
     el.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span><span>${opt}</span>`;
     el.onclick = () => selectAnswer(i);
     container.appendChild(el);
@@ -601,7 +665,8 @@ function onTimeout() {
   const options = document.querySelectorAll('.option');
   options.forEach(o => o.classList.add('disabled'));
   options[questions[current].correcta].classList.add('correct');
-  totalTime += SECS; wrongCount++;
+  totalTime += SECS; wrongCount++; streak = 0;
+  document.getElementById('streakBadge').classList.remove('visible');
   const fb = document.getElementById('feedbackBar');
   fb.className = 'feedback-bar wrong';
   document.getElementById('feedbackTitle').textContent = '⏱ Tiempo agotado';
@@ -609,6 +674,7 @@ function onTimeout() {
   const btn = document.getElementById('nextBtn');
   btn.style.display = 'block';
   btn.textContent = current < questions.length-1 ? 'Siguiente →' : 'Ver resultados →';
+  setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
 }
 
 function selectAnswer(idx) {
@@ -622,22 +688,30 @@ function selectAnswer(idx) {
   const fb = document.getElementById('feedbackBar');
   if (idx === q.correcta) {
     options[idx].classList.add('correct');
-    score += 10; correctCount++;
+    score += 10; correctCount++; streak++;
     document.getElementById('headerPts').textContent = score;
-    document.getElementById('score-pill')?.classList.add('pop');
     fb.className = 'feedback-bar correct';
     document.getElementById('feedbackTitle').textContent = '✓ ¡Correcto! +10 pts';
   } else {
     options[idx].classList.add('wrong');
     options[q.correcta].classList.add('correct');
-    wrongCount++;
+    wrongCount++; streak = 0;
     fb.className = 'feedback-bar wrong';
     document.getElementById('feedbackTitle').textContent = '✗ Incorrecto';
+  }
+  // Streak badge
+  const badge = document.getElementById('streakBadge');
+  if (streak >= 2) {
+    badge.classList.add('visible');
+    document.getElementById('streakNum').textContent = streak;
+  } else {
+    badge.classList.remove('visible');
   }
   document.getElementById('feedbackText').textContent = q.explicacion;
   const btn = document.getElementById('nextBtn');
   btn.style.display = 'block';
   btn.textContent = current < questions.length-1 ? 'Siguiente →' : 'Ver resultados →';
+  setTimeout(() => btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
 }
 
 function nextQuestion() {
@@ -696,6 +770,20 @@ function showResult() {
   document.getElementById('puntoResultSub').textContent = SCRIPT_URL ? 'Resultado registrado ✓' : '¡Quiz completado!';
   if (switched) {
     document.getElementById('puntoResultSub').textContent = '⚠️ Saliste de la app durante el quiz';
+  }
+  if (score === 50) setTimeout(launchConfetti, 400);
+}
+
+function launchConfetti() {
+  const colors = ['#c8a030','#e8c060','#3daa6a','#4a90d9','#e05252','#9b59b6','#ff9500','#fff'];
+  for (let i = 0; i < 90; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `left:${Math.random()*100}vw;background:${colors[i%colors.length]};animation-duration:${1.6+Math.random()*2}s;animation-delay:${Math.random()*0.3}s;transform:rotate(${Math.random()*360}deg);width:${6+Math.random()*7}px;height:${6+Math.random()*7}px`;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 4500);
+    }, i * 18);
   }
 }
 
