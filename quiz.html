@@ -262,6 +262,16 @@
   .rank-sub  { font-size: 11px; color: var(--muted); margin-top: 1px; }
   .rank-score { font-size: 16px; font-weight: 700; color: var(--gold2); flex-shrink: 0; }
 
+  /* Avatar wrapper para badge salió */
+  .avatar-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+  .avatar-salio {
+    position: absolute; top: -2px; right: -2px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--wrong); border: 2px solid var(--navy2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: #fff; font-weight: 700;
+  }
+
   /* YA COMPLETADO */
   .done-wrap { display: flex; flex-direction: column; align-items: center; padding-top: 60px; text-align: center; gap: 12px; }
   .done-emoji { font-size: 64px; }
@@ -434,6 +444,16 @@
       <div class="name" id="puntoResultName">Golden Fish</div>
       <div class="sub" id="puntoResultSub">¡Quiz completado!</div>
     </div>
+  </div>
+
+  <div class="team-card" id="resultTeamCard" style="display:none">
+    <div class="team-card-header">
+      <span class="team-card-title" id="resultTeamTitle">Tu equipo</span>
+      <span class="team-count-badge" id="resultTeamBadge">...</span>
+    </div>
+    <div id="resultTeamList" class="team-list"></div>
+    <div class="progress-track"><div class="progress-fill" id="resultTeamFill" style="width:0%"></div></div>
+    <div class="team-msg" id="resultTeamMsg"></div>
   </div>
 
   <button class="ranking-btn" id="rankingToggle" onclick="toggleRanking()">
@@ -773,6 +793,57 @@ function showResult() {
     document.getElementById('puntoResultSub').textContent = '⚠️ Saliste de la app durante el quiz';
   }
   if (score === 50) setTimeout(launchConfetti, 400);
+  if (!TEST_MODE) setTimeout(fetchTeamResult, 2500);
+}
+
+async function fetchTeamResult() {
+  if (!SCRIPT_URL) return;
+  try {
+    const r = await fetch(SCRIPT_URL + '?action=getProgress&punto=' + encodeURIComponent(PUNTO));
+    const d = await r.json();
+    showTeamCardResult(d.completados || [], d.total || 0);
+  } catch(e) {}
+}
+
+function showTeamCardResult(completados, total) {
+  const card = document.getElementById('resultTeamCard');
+  if (!completados.length) return;
+  card.style.display = 'block';
+
+  const count = completados.length;
+  document.getElementById('resultTeamTitle').textContent = 'Equipo — ' + PUNTO;
+  document.getElementById('resultTeamBadge').textContent = count + (total > 0 ? '/' + total : '');
+
+  if (total > 0) {
+    document.getElementById('resultTeamFill').style.width = Math.min(count / total * 100, 100) + '%';
+    const faltan = total - count;
+    document.getElementById('resultTeamMsg').textContent = faltan > 0
+      ? `Faltan ${faltan} persona${faltan > 1 ? 's' : ''} por responder`
+      : '¡Todo el equipo respondió! 🏆';
+  }
+
+  const list = document.getElementById('resultTeamList');
+  list.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'team-avatars';
+  completados.slice(0, 8).forEach((c, i) => {
+    const wrapEl = document.createElement('div');
+    wrapEl.className = 'avatar-wrap';
+    const av = document.createElement('div');
+    av.className = 'team-avatar';
+    av.style.background = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    av.textContent = getInitials(c.nombre);
+    av.title = c.nombre + ' — ' + c.puntaje + ' pts' + (c.salio ? ' · salió de la app' : '');
+    wrapEl.appendChild(av);
+    if (c.salio) {
+      const badge = document.createElement('div');
+      badge.className = 'avatar-salio';
+      badge.textContent = '!';
+      wrapEl.appendChild(badge);
+    }
+    wrap.appendChild(wrapEl);
+  });
+  list.appendChild(wrap);
 }
 
 function launchConfetti() {
