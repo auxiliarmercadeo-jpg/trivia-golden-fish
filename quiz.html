@@ -484,7 +484,7 @@ const USER_ID   = tgUser?.id || null;
 const USER_NAME = tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser.last_name : '')) : 'Invitado';
 const START_PARAM = tg?.initDataUnsafe?.start_param;
 const params   = new URLSearchParams(location.search);
-const PUNTO    = START_PARAM || decodeURIComponent(params.get('punto') || 'Tu Punto de Venta');
+const PUNTO    = (START_PARAM ? START_PARAM.replace(/_/g, ' ') : null) || decodeURIComponent(params.get('punto') || 'Tu Punto de Venta');
 const TEST_MODE = params.get('test') === '1';
 
 let questions = [], semanaKey = 'semana_1';
