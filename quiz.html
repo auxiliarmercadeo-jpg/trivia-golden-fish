@@ -465,6 +465,7 @@ const USER_NAME = tgUser ? (tgUser.first_name + (tgUser.last_name ? ' ' + tgUser
 const START_PARAM = tg?.initDataUnsafe?.start_param;
 const params   = new URLSearchParams(location.search);
 const PUNTO    = START_PARAM || decodeURIComponent(params.get('punto') || 'Tu Punto de Venta');
+const TEST_MODE = params.get('test') === '1';
 
 let questions = [], semanaKey = 'semana_1';
 let current = 0, score = 0, correctCount = 0, wrongCount = 0;
@@ -499,7 +500,7 @@ window.onload = async () => {
 };
 
 function checkAlreadyDone() {
-  if (!tg?.CloudStorage) return;
+  if (TEST_MODE || !tg?.CloudStorage) return;
   tg.CloudStorage.getItem(semanaKey, (err, value) => {
     if (!err && value) {
       const data = JSON.parse(value);
@@ -725,7 +726,7 @@ function nextQuestion() {
 }
 
 function saveResult() {
-  if (tg?.CloudStorage) {
+  if (!TEST_MODE && tg?.CloudStorage) {
     tg.CloudStorage.setItem(semanaKey, JSON.stringify({ puntaje: score, fecha: new Date().toISOString() }));
   }
   if (!SCRIPT_URL) return;
