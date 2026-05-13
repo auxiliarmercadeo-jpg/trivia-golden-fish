@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ranking Golden Fish</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:     #f5ede0;
+    --bg2:    #ece3d0;
+    --bg3:    #e2d7c2;
+    --border: rgba(139,109,65,0.18);
+    --text:   #2a1a08;
+    --muted:  #7a6548;
+    --gold:   #b07d10;
+    --gold2:  #c8920e;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; background: var(--bg); font-family: 'Poppins', sans-serif; color: var(--text); }
+
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-logo { font-size: 22px; }
+  .header-title { font-size: 15px; font-weight: 800; color: var(--gold); letter-spacing: 0.05em; }
+  .header-sub { font-size: 11px; color: var(--muted); }
+
+  .semana-tabs {
+    display: flex; gap: 6px; padding: 12px 16px 0;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .semana-tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border);
+    background: var(--bg2); color: var(--muted); transition: all 0.15s;
+  }
+  .tab.active { background: var(--gold); color: white; border-color: var(--gold); }
+
+  .list { padding: 10px 16px 32px; display: flex; flex-direction: column; gap: 8px; }
+
+  .item {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px;
+    transition: transform 0.1s;
+  }
+  .item.mine {
+    background: rgba(176,125,16,0.1);
+    border-color: rgba(176,125,16,0.4);
+    box-shadow: 0 0 0 1.5px rgba(176,125,16,0.25);
+  }
+  .item.top1 { background: rgba(255,215,0,0.12); border-color: rgba(200,146,14,0.5); }
+  .item.top2 { background: rgba(192,192,192,0.12); border-color: rgba(150,150,150,0.4); }
+  .item.top3 { background: rgba(205,127,50,0.1);  border-color: rgba(180,100,30,0.35); }
+
+  .rank {
+    font-size: 18px; font-weight: 900; min-width: 32px; text-align: center;
+    color: var(--muted);
+  }
+  .rank.r1 { color: #c8920e; }
+  .rank.r2 { color: #888; }
+  .rank.r3 { color: #a0622a; }
+
+  .info { flex: 1; min-width: 0; }
+  .name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .pts {
+    text-align: right; flex-shrink: 0;
+  }
+  .pts-num { font-size: 17px; font-weight: 800; color: var(--gold2); }
+  .pts-label { font-size: 10px; color: var(--muted); }
+
+  .mine-badge {
+    font-size: 10px; font-weight: 700; color: var(--gold);
+    background: rgba(176,125,16,0.12); padding: 2px 8px;
+    border-radius: 10px; margin-top: 3px; display: inline-block;
+  }
+
+  .footer-note {
+    text-align: center; font-size: 11px; color: var(--muted);
+    padding: 0 20px 24px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">🏆</div>
+  <div class="header-title">RANKING NACIONAL</div>
+  <div class="header-sub" id="headerSub">Semana 3 · Actualizado hoy</div>
+</div>
+
+<div class="semana-tabs" id="tabs">
+  <div class="tab" onclick="setTab(0)">Sem 1</div>
+  <div class="tab" onclick="setTab(1)">Sem 2</div>
+  <div class="tab active" onclick="setTab(2)">Sem 3</div>
+  <div class="tab" onclick="setTab(3)">General</div>
+</div>
+
+<div class="list" id="list"></div>
+<div class="footer-note">Solo se muestran los 20 mejores puntos · Los datos se actualizan en tiempo real</div>
+
+<script>
+const tg    = window.Telegram?.WebApp;
+const param = tg?.initDataUnsafe?.start_param;
+const PUNTO = param ? param.replace(/_/g, ' ') : new URLSearchParams(location.search).get('punto') || '';
+
+const DATOS = [
+  { nombre: 'NUESTRO BOGOTA',       semanas: [44, 48, 50],  participantes: 12 },
+  { nombre: 'AEROPUERTO EL DORADO', semanas: [46, 42, 48],  participantes: 9  },
+  { nombre: 'MAYORCA ETAPA 1',      semanas: [40, 50, 46],  participantes: 11 },
+  { nombre: 'SANTA FE MED',         semanas: [42, 44, 44],  participantes: 14 },
+  { nombre: 'CONECTA BOGOTA',       semanas: [38, 46, 42],  participantes: 8  },
+  { nombre: 'UNICO BARRANQUILLA',   semanas: [36, 40, 44],  participantes: 10 },
+  { nombre: 'CENTRO MAYOR',         semanas: [34, 38, 42],  participantes: 13 },
+  { nombre: 'TITAN',                semanas: [40, 36, 40],  participantes: 7  },
+  { nombre: 'OVIEDO',               semanas: [38, 34, 40],  participantes: 9  },
+  { nombre: 'ANDINO',               semanas: [32, 42, 38],  participantes: 11 },
+  { nombre: 'GRAN ESTACION1',       semanas: [36, 38, 36],  participantes: 8  },
+  { nombre: 'TESORO',               semanas: [30, 36, 38],  participantes: 12 },
+  { nombre: 'SAN DIEGO',            semanas: [34, 32, 36],  participantes: 6  },
+  { nombre: 'FONTANAR',             semanas: [28, 34, 36],  participantes: 9  },
+  { nombre: 'HAYUELOS',             semanas: [32, 30, 34],  participantes: 7  },
+  { nombre: 'PLAZA LAS AMERICAS',   semanas: [26, 32, 34],  participantes: 10 },
+  { nombre: 'VIVA ENVIGADO',        semanas: [30, 28, 32],  participantes: 8  },
+  { nombre: 'SANTAFE BOGOTA',       semanas: [28, 30, 30],  participantes: 11 },
+  { nombre: 'SALITRE',              semanas: [24, 28, 30],  participantes: 6  },
+  { nombre: 'COSMOCENTRO',          semanas: [22, 26, 28],  participantes: 9  },
+];
+
+let tabActual = 2;
+
+function setTab(i) {
+  tabActual = i;
+  document.querySelectorAll('.tab').forEach((t, idx) => t.classList.toggle('active', idx === i));
+  renderList();
+}
+
+function getPts(d, tab) {
+  if (tab === 3) return d.semanas.reduce((a, b) => a + b, 0);
+  return d.semanas[tab] ?? 0;
+}
+
+function renderList() {
+  const sorted = [...DATOS].sort((a, b) => getPts(b, tabActual) - getPts(a, tabActual));
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  sorted.forEach((d, i) => {
+    const pos   = i + 1;
+    const pts   = getPts(d, tabActual);
+    const esMio = PUNTO && d.nombre.toUpperCase() === PUNTO.toUpperCase();
+
+    const rankClass = pos === 1 ? 'r1' : pos === 2 ? 'r2' : pos === 3 ? 'r3' : '';
+    const itemClass = esMio ? 'mine' : pos === 1 ? 'top1' : pos === 2 ? 'top2' : pos === 3 ? 'top3' : '';
+    const medal     = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
+
+    list.innerHTML += `
+      <div class="item ${itemClass}">
+        <div class="rank ${rankClass}">${medal}</div>
+        <div class="info">
+          <div class="name">${d.nombre}</div>
+          <div class="meta">${d.participantes} participantes</div>
+          ${esMio ? '<span class="mine-badge">Tu punto</span>' : ''}
+        </div>
+        <div class="pts">
+          <div class="pts-num">${pts}</div>
+          <div class="pts-label">pts</div>
+        </div>
+      </div>`;
+  });
+}
+
+renderList();
+if (tg) tg.expand();
+</script>
+</body>
+</html>
